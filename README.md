@@ -1,1 +1,1 @@
-# Sistema-de-Gesti-n-y-Compra-de-Libros-en-L-nea
+# Sistema-de-Gestion-y-Compra-de-Libros-en-Linea
