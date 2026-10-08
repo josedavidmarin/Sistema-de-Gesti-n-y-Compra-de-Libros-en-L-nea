@@ -19,9 +19,8 @@
 ## 👥 Integrantes del Equipo
 
 * **Jose David Marin Giraldo**
-* **Omar David Bernal Restrepo**
-* **Andres Felipe Mora**
-* **Maximiliano Giraldo**
+* **Edwin Osorio Cartagena**
+* **Maicol Londono Hernandez**
 
 ---
 
@@ -40,17 +39,25 @@ El **Sistema de Gestión y Compra de Libros en Línea** es una plataforma de com
 
 ```text
 ├── docs/                                  # Documentación formal del proyecto
-│   ├── IS873_Nota1_Definicion_del_Proyecto_Consolidado.pdf  # Documento maestro consolidado (9 págs)
+│   ├── IS873_Nota1_Definicion_del_Proyecto_Consolidado.pdf  # Documento maestro consolidado formal
 │   ├── IS873_Nota1_Definicion_del_Proyecto_Consolidado.docx # Versión editable Word
-│   ├── diagramas/                         # Diagramas de Casos de Uso y Modelos Relacionales
-│   │   └── Casos_de_Uso_General_Actores.pdf # Diagrama con distinción cromática por actor
-│   └── mockups/                           # Wireframes y pantallas de flujos críticos
-│       ├── mockup_01_reserva_ejemplares.png
-│       ├── mockup_02_carrito_compras.png
-│       ├── mockup_03_devolucion_qr.png
-│       ├── mockup_04_inventario_admin.png
-│       ├── mockup_05_recogida_google_maps.png
-│       └── mockup_06_catalogo_filtros.png
+│   ├── diagramas/                         # Diagramas C4 y Casos de Uso en alta definición
+│   │   ├── diagrama_01_casos_de_uso.png   # Trazabilidad cromática por actor
+│   │   ├── diagrama_02_c4_contexto.png    # C4 Nivel 1 (Contexto de Sistema - Alto Contraste)
+│   │   └── diagrama_03_c4_contenedores.png# C4 Nivel 2 (Contenedores de Solución - Alto Contraste)
+│   └── mockups/                           # Wireframes y pantallas del alcance Must Have
+│       ├── mockup_01_registro_usuario.png
+│       ├── mockup_02_registro_admin.png
+│       ├── mockup_03_restriccion_admin.png
+│       ├── mockup_04_login.png
+│       ├── mockup_05_registro_libro.png
+│       ├── mockup_06_eliminar_libro.png
+│       ├── mockup_07_editar_libro.png
+│       ├── mockup_08_inventario_stock.png
+│       ├── mockup_09_busqueda_catalogo.png
+│       ├── mockup_10_carrito_compras.png
+│       ├── mockup_11_cancelar_compra.png
+│       └── mockup_12_saldo_disponible.png
 │
 ├── poc/                                   # Prueba de Concepto (Validación del Riesgo Más Crítico)
 │   ├── README.md                          # Documentación completa de la PoC, hipótesis y resultados
