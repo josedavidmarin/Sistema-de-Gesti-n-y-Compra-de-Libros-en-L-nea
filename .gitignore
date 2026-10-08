@@ -36,8 +36,11 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# IDE & Editors
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
+# Node
+node_modules/
+dist/
+
+# Environments
+.env
+backend/venv/
+backend/.env
