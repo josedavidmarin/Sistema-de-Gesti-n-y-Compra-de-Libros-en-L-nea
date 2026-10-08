@@ -132,4 +132,4 @@ Contenido estructurado en 8 secciones:
 5. Diseño Preliminar de la Solución (C4 Nivel 1 y 2, Modelo Relacional de 34 Tablas, Mockups Visuales y Stack).
 6. Product Backlog Inicial Priorizado (Sprints 1 y 2 con estimación en Story Points).
 7. Prueba de Concepto Funcional (PoC) sobre el supuesto técnico más riesgoso.
-8. Guía de Respuestas para el Comité Evaluador (Demo Day).
+8. Respuestas para el Comité Evaluador (Demo Day).
