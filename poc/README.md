@@ -3,7 +3,7 @@
 **Asignatura:** IS873 – Laboratorio de Software (UTP)  
 **Semestre:** 2026-2  
 **Proyecto:** Sistema de Gestión y Compra de Libros en Línea  
-**Equipo:** Jose David Marin, Omar David Bernal, Andres Felipe Mora, Maximiliano Giraldo  
+**Equipo:** Jose David Marin Giraldo, Edwin Osorio Cartagena, Maicol Londono Hernandez 
 
 ---
 
