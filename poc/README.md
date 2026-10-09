@@ -9,10 +9,10 @@
 
 ## 1. Identificación del Supuesto Técnico más Riesgoso
 
-### ❓ Formulación de la Hipótesis de Riesgo
+###  Formulación de la Hipótesis de Riesgo
 > *«¿Es posible garantizar la consistencia atómica y erradicar condiciones de carrera (sobreventas) bajo alta concurrencia de clientes reservando ejemplares físicos únicos, mientras un proceso asíncrono (Scheduler) en segundo plano libera automáticamente el stock retenido al expirar las 24 horas sin provocar bloqueos mutuos ni inconsistencias en la base de datos?»*
 
-### 🔍 ¿Por qué es el mayor riesgo técnico del proyecto?
+###  ¿Por qué es el mayor riesgo técnico del proyecto?
 1. **Doble reserva simultánea:** Si dos o más clientes intentan apartar la última copia física en el mismo milisegundo, un sistema sin aislamiento transaccional estricto generará reservas duplicadas sobre un ejemplar físico inexistente.
 2. **Desincronización de inventario:** La separación arquitectónica entre el título bibliográfico (`Libro`) y la copia física individual (`Ejemplar`) exige que cada cambio de estado (`DISPONIBLE`, `RESERVADO`, `VENDIDO`) actualice de forma síncrona y atómica el contador visible de stock.
 3. **Liberación autónoma sin operador humano:** La regla de negocio central exige que el stock no quede secuestrado; un scheduler debe consultar periódicamente la base de datos, expirar reservas y restaurar inventario sin interferir con compras activas.
@@ -31,13 +31,13 @@ El script `poc_reserva_concurrencia.py` constituye un **artefacto mínimo reprod
 
 ## 3. Alcance de la Prueba: Qué Valida y Qué NO Valida
 
-### ✅ Lo que SÍ Valida este Artefacto:
+###  Lo que SÍ Valida este Artefacto:
 * **Erradicación de sobreventas:** De 10 peticiones concurrentes, exactamente 2 son aprobadas y 8 son rechazadas limpiamente por agotamiento de existencias.
 * **Consistencia transaccional ACID:** El stock pasa de 2 a 0 sin inconsistencias y cada ejemplar queda asociado a un único cliente.
 * **Autonomía del Scheduler:** La tarea programada identifica las reservas vencidas y restaura el stock a 2 ejemplares de forma transparente.
 * **Tiempo de respuesta:** La resolución de 10 transacciones concurrentes toma menos de 35 milisegundos.
 
-### ❌ Lo que NO Valida Todavía (Deuda para Notas posteriores):
+###  Lo que NO Valida Todavía (Deuda para Notas posteriores):
 * **No incluye interfaz gráfica de usuario:** No contiene el frontend en React ni los componentes visuales de Tailwind CSS.
 * **No implementa la pasarela de pagos:** No realiza la llamada HTTPS al servicio de tokenización de tarjetas.
 * **No utiliza PostgreSQL en la nube:** Emplea SQLite local como emulador de base de datos relacional para garantizar portabilidad inmediata durante la sustentación.
