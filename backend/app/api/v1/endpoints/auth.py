@@ -15,31 +15,31 @@ router = APIRouter()
     "/register",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="HU-01: Registro de Nuevos Clientes (RF-027)"
+    summary="HU-01: Client Self-Registration (RF-027)"
 )
 def register_client(
     user_in: UserRegister,
     db: Session = Depends(get_db)
 ):
     """
-    Registra un nuevo usuario con rol CLIENTE en la plataforma.
-    Valida unicidad de DNI y Correo Electrónico, y cifra la contraseña con bcrypt.
+    Registers a new user with the CLIENTE role in the platform.
+    Validates uniqueness of national ID (DNI) and Email, and salts/hashes password with bcrypt.
     """
-    # 1. Verificar si el email ya existe
+    # 1. Verify if email is already registered
     if db.query(User).filter(User.email == user_in.email).first():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El correo electrónico ya se encuentra registrado."
         )
     
-    # 2. Verificar si el DNI ya existe
+    # 2. Verify if DNI is already registered
     if db.query(User).filter(User.dni == user_in.dni).first():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El documento de identidad (DNI) ya se encuentra registrado."
         )
     
-    # 3. Crear usuario
+    # 3. Create user entity with hashed password
     user = User(
         dni=user_in.dni,
         email=user_in.email,
@@ -60,15 +60,15 @@ def register_client(
 @router.post(
     "/login",
     response_model=Token,
-    summary="HU-04: Inicio de Sesión y Autenticación JWT (RF-026 / RF-028)"
+    summary="HU-04: User Login and JWT Issuance (RF-026 / RF-028)"
 )
 def login(
     credentials: UserLogin,
     db: Session = Depends(get_db)
 ):
     """
-    Autentica al usuario por email y contraseña.
-    Retorna token Bearer JWT con claims tipados (sub, rol, nombre).
+    Authenticates a user via email and password.
+    Returns a cryptographically signed Bearer JWT token with typed claims (sub, rol, user_id, nombre).
     """
     user = db.query(User).filter(User.email == credentials.email).first()
     if not user or not verify_password(credentials.password, user.hashed_password):
@@ -108,7 +108,7 @@ def login_swagger(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    """Endpoint compatible con el botón 'Authorize' de Swagger UI."""
+    """Endpoint compatible with Swagger UI 'Authorize' modal dialog."""
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -135,10 +135,13 @@ def login_swagger(
 @router.post(
     "/logout",
     response_model=GenericMessage,
-    summary="HU-05: Cierre de Sesión"
+    summary="HU-05: User Session Logout"
 )
 def logout(current_user: User = Depends(get_current_user)):
-    """Cierra la sesión del cliente (notificación de invalidación)."""
+    """
+    Terminates current user authenticated session.
+    Confirms local client credential invalidation.
+    """
     return GenericMessage(
         mensaje="Sesión finalizada exitosamente.",
         detalle=f"Usuario {current_user.email} desconectado."
@@ -147,23 +150,27 @@ def logout(current_user: User = Depends(get_current_user)):
 @router.get(
     "/me",
     response_model=UserResponse,
-    summary="HU-07: Consulta de Perfil del Usuario Autenticado (RF-028)"
+    summary="HU-07: Get Authenticated User Profile (RF-028)"
 )
 def get_my_profile(current_user: User = Depends(get_current_user)):
-    """Obtiene los datos del perfil activo a partir del token JWT."""
+    """
+    Retrieves current active user profile information decoded from JWT bearer identity.
+    """
     return current_user
 
 @router.put(
     "/me",
     response_model=UserResponse,
-    summary="HU-07: Actualización de Teléfono y Dirección de Envío (RF-021 / RF-028)"
+    summary="HU-07: Update Phone and Mailing Address (RF-021 / RF-028)"
 )
 def update_my_profile(
     profile_in: UserUpdateProfile,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Permite al usuario editar su teléfono y dirección de correspondencia."""
+    """
+    Allows authenticated users to update their contact phone number and physical shipping address.
+    """
     if profile_in.telefono is not None:
         current_user.telefono = profile_in.telefono
     if profile_in.direccion is not None:
@@ -176,7 +183,7 @@ def update_my_profile(
 @router.put(
     "/change-password",
     response_model=GenericMessage,
-    summary="HU-06: Cambio de Contraseña (RF-028)"
+    summary="HU-06: Change Password (RF-028)"
 )
 def change_password(
     pwd_in: PasswordChange,
@@ -184,8 +191,8 @@ def change_password(
     db: Session = Depends(get_db)
 ):
     """
-    Verifica la contraseña anterior antes de permitir la actualización.
-    Aplica hashing bcrypt unidireccional a la nueva clave.
+    Verifies current active password before permitting password updates.
+    Applies one-way salted bcrypt hashing to the new credential.
     """
     if not verify_password(pwd_in.current_password, current_user.hashed_password):
         raise HTTPException(

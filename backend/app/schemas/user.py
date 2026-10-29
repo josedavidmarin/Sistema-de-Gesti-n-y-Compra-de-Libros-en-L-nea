@@ -3,67 +3,67 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 class UserRegister(BaseModel):
-    """Esquema de entrada para registro de nuevos clientes (HU-01 / RF-027)."""
-    dni: str = Field(..., min_length=5, max_length=20, example="1088123456")
-    email: EmailStr = Field(..., example="lector@gmail.com")
-    nombre: str = Field(..., min_length=2, max_length=50, example="Carlos")
-    apellido: str = Field(..., min_length=2, max_length=50, example="Gomez")
-    telefono: Optional[str] = Field(None, example="3125554321")
-    direccion: Optional[str] = Field(None, example="Cra 27 # 4-10, Pereira")
-    password: str = Field(..., min_length=6, max_length=100, example="ClaveSegura2026!")
+    """Input schema for new customer self-registration (HU-01 / RF-027)."""
+    dni: str = Field(..., min_length=5, max_length=20, example="1088123456", description="Unique national identification number")
+    email: EmailStr = Field(..., example="lector@gmail.com", description="Unique customer email address")
+    nombre: str = Field(..., min_length=2, max_length=50, example="Carlos", description="First name")
+    apellido: str = Field(..., min_length=2, max_length=50, example="Gomez", description="Last name")
+    telefono: Optional[str] = Field(None, example="3125554321", description="Contact phone number")
+    direccion: Optional[str] = Field(None, example="Cra 27 # 4-10, Pereira", description="Physical mailing address")
+    password: str = Field(..., min_length=6, max_length=100, example="ClaveSegura2026!", description="Raw password to be hashed with bcrypt")
 
 class UserCreateAdmin(BaseModel):
-    """Esquema para creación de administradores por parte del Superadmin Root (HU-02 / RF-030)."""
-    dni: str = Field(..., min_length=5, max_length=20, example="98765432")
-    email: EmailStr = Field(..., example="admin.bodega@libreria.com")
-    nombre: str = Field(..., min_length=2, max_length=50, example="Laura")
-    apellido: str = Field(..., min_length=2, max_length=50, example="Restrepo")
-    telefono: Optional[str] = Field(None, example="3109876543")
-    password: str = Field(..., min_length=8, max_length=100, example="AdminPass2026*")
+    """Input schema for administrator creation by Root superuser (HU-02 / RF-030)."""
+    dni: str = Field(..., min_length=5, max_length=20, example="98765432", description="Unique national ID for the administrator")
+    email: EmailStr = Field(..., example="admin.bodega@libreria.com", description="Official corporate administrator email")
+    nombre: str = Field(..., min_length=2, max_length=50, example="Laura", description="Administrator first name")
+    apellido: str = Field(..., min_length=2, max_length=50, example="Restrepo", description="Administrator last name")
+    telefono: Optional[str] = Field(None, example="3109876543", description="Contact phone number")
+    password: str = Field(..., min_length=8, max_length=100, example="AdminPass2026*", description="Initial secure temporary password")
 
 class UserLogin(BaseModel):
-    """Esquema de inicio de sesión (HU-04 / RF-026)."""
-    email: EmailStr = Field(..., example="lector@gmail.com")
-    password: str = Field(..., example="ClaveSegura2026!")
+    """Input schema for user authentication / login (HU-04 / RF-026)."""
+    email: EmailStr = Field(..., example="lector@gmail.com", description="Registered email address")
+    password: str = Field(..., example="ClaveSegura2026!", description="User password")
 
 class Token(BaseModel):
-    """Token Bearer retornado tras login exitoso."""
-    access_token: str
-    token_type: str = "bearer"
-    rol: str
-    nombre: str
-    apellido: str
-    email: str
-    user_id: int
+    """Bearer token response schema returned upon successful authentication (HU-04)."""
+    access_token: str = Field(..., description="Cryptographically signed JWT Bearer token")
+    token_type: str = Field("bearer", description="Token authorization type")
+    rol: str = Field(..., description="Assigned RBAC role: CLIENTE, ADMINISTRADOR, ROOT")
+    nombre: str = Field(..., description="User first name")
+    apellido: str = Field(..., description="User last name")
+    email: str = Field(..., description="User email address")
+    user_id: int = Field(..., description="Unique database primary key")
 
 class UserResponse(BaseModel):
-    """Datos públicos de usuario retornado por el API."""
-    id: int
-    dni: str
-    email: str
-    nombre: str
-    apellido: str
-    telefono: Optional[str] = None
-    direccion: Optional[str] = None
-    rol: str
-    saldo_disponible: float
-    is_active: bool
-    fecha_registro: datetime
+    """Public user profile data schema returned by the API (HU-07 / RF-028)."""
+    id: int = Field(..., description="User unique database ID")
+    dni: str = Field(..., description="National identification number")
+    email: str = Field(..., description="User email address")
+    nombre: str = Field(..., description="First name")
+    apellido: str = Field(..., description="Last name")
+    telefono: Optional[str] = Field(None, description="Contact phone number")
+    direccion: Optional[str] = Field(None, description="Shipping and delivery address")
+    rol: str = Field(..., description="Assigned RBAC role")
+    saldo_disponible: float = Field(..., description="Virtual wallet balance (COP) for purchases")
+    is_active: bool = Field(..., description="Account status flag")
+    fecha_registro: datetime = Field(..., description="Account creation timestamp")
 
     class Config:
         orm_mode = True
 
 class UserUpdateProfile(BaseModel):
-    """Edición de información de perfil del cliente (HU-07 / RF-028)."""
-    telefono: Optional[str] = Field(None, example="3001234567")
-    direccion: Optional[str] = Field(None, example="Av. Las Américas # 12-40, Pereira")
+    """Input schema for customer profile contact update (HU-07 / RF-021 / RF-028)."""
+    telefono: Optional[str] = Field(None, example="3001234567", description="Updated contact phone number")
+    direccion: Optional[str] = Field(None, example="Av. Las Américas # 12-40, Pereira", description="Updated delivery address")
 
 class PasswordChange(BaseModel):
-    """Cambio de contraseña para usuario autenticado (HU-06 / RF-028)."""
-    current_password: str = Field(..., min_length=6)
-    new_password: str = Field(..., min_length=6, max_length=100)
+    """Input schema for secure password change with verification (HU-06 / RF-028)."""
+    current_password: str = Field(..., min_length=6, description="Current password for verification")
+    new_password: str = Field(..., min_length=6, max_length=100, description="New secure password")
 
 class GenericMessage(BaseModel):
-    """Mensaje genérico de éxito."""
-    mensaje: str
-    detalle: Optional[str] = None
+    """Generic status and confirmation message response."""
+    mensaje: str = Field(..., description="Primary status message")
+    detalle: Optional[str] = Field(None, description="Optional detailed contextual information")

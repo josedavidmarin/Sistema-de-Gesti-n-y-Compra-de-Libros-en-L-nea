@@ -7,12 +7,16 @@ from app.core.config import settings
 from app.core.security import decode_access_token
 from app.models.user import User, RoleEnum
 
+# OAuth2 scheme configured for OpenAPI Swagger UI authorization
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/auth/login-swagger"
 )
 
 def get_db() -> Generator:
-    """Inyección de dependencias de sesión de base de datos."""
+    """
+    Database session dependency provider.
+    Yields a SQLAlchemy session and ensures proper closure after request lifecycle.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -23,10 +27,24 @@ def get_current_user(
     db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme)
 ) -> User:
-    """Extrae el usuario autenticado a partir del Bearer token JWT."""
+    """
+    Extracts and authenticates the user from the incoming Bearer JWT access token.
+    Validates token signature, expiration, user existence, and active account status.
+    
+    Args:
+        db (Session): SQLAlchemy database session.
+        token (str): JWT Bearer token extracted from the Authorization header.
+        
+    Returns:
+        User: Authenticated User database model.
+        
+    Raises:
+        HTTPException: 401 Unauthorized if credentials or token are invalid/expired.
+        HTTPException: 403 Forbidden if user account is deactivated.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Credenciales de autenticación inválidas o sesión expirada.",
+        detail="Could not validate credentials or session has expired.",
         headers={"WWW-Authenticate": "Bearer"},
     )
     
@@ -44,29 +62,47 @@ def get_current_user(
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Cuenta de usuario inactiva o suspendida."
+            detail="User account is deactivated or suspended."
         )
     return user
 
 def require_roles(allowed_roles: List[str]):
-    """Dependencia de control de acceso basada en roles (RBAC)."""
+    """
+    Role-Based Access Control (RBAC) authorization dependency factory.
+    Verifies that the authenticated user possesses one of the authorized roles.
+    
+    Args:
+        allowed_roles (List[str]): List of permitted role names (e.g. ['ROOT', 'ADMINISTRADOR']).
+        
+    Returns:
+        Callable: Dependency function checking role membership.
+    """
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
         if current_user.rol not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Acceso denegado: se requiere uno de los siguientes roles: {', '.join(allowed_roles)}. Su rol actual es {current_user.rol}."
+                detail=f"Access denied: Required role in {allowed_roles}. Current role: {current_user.rol}."
             )
         return current_user
     return role_checker
 
 def verify_client_only(current_user: User = Depends(get_current_user)) -> User:
     """
-    Regla de Negocio RF-031 / HU-03:
-    Impide estrictamente que Administradores o Root realicen compras o reservas.
+    Enforces Business Rule RF-031 / HU-03:
+    Strictly forbids operational staff ('ADMINISTRADOR' or 'ROOT') from purchasing or reserving books.
+    
+    Args:
+        current_user (User): Authenticated user model.
+        
+    Returns:
+        User: Authenticated user model if role is CLIENTE.
+        
+    Raises:
+        HTTPException: 403 Forbidden if user is ROOT or ADMINISTRADOR.
     """
     if current_user.rol in [RoleEnum.ADMINISTRADOR.value, RoleEnum.ROOT.value]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Restricción de Negocio (RF-031): Los usuarios con rol '{current_user.rol}' tienen terminantemente prohibido comprar o reservar libros en la plataforma."
+            detail=f"Business Restriction (RF-031): Users with role '{current_user.rol}' are strictly prohibited from purchasing or reserving books."
         )
     return current_user
