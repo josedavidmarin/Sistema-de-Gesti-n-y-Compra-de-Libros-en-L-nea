@@ -1,7 +1,8 @@
 import axios from 'axios';
 import type { AuthResponse, GenericMessage, User } from '../types';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+// Reads backend API URL dynamically from environment (Vercel) or falls back to local FastAPI
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

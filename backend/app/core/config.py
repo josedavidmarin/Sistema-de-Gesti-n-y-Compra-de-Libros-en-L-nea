@@ -15,12 +15,13 @@ class Settings(BaseSettings):
     # Base de Datos
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./libreria.db")
     
-    # Orígenes permitidos para Frontend React
+    # Orígenes permitidos para Frontend React (Local + Vercel Cloud)
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "http://localhost:4173"
+        "http://localhost:4173",
+        "*"
     ]
     
     # Superadmin Root por Defecto
