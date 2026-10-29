@@ -1,3 +1,11 @@
+/**
+ * @file ProfilePage.tsx
+ * @description User profile management and security view implementing:
+ * - HU-06 (RF-028): Secure password update with previous password verification.
+ * - HU-07 (RF-021, RF-037): Contact/shipping details update and virtual wallet balance display.
+ * - HU-03 (RF-031): Interactive role-based purchase restriction simulator.
+ */
+
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -14,6 +22,9 @@ import {
   ShoppingBag
 } from 'lucide-react';
 
+/**
+ * Profile management component for authenticated users (HU-06, HU-07, HU-03).
+ */
 export const ProfilePage: React.FC = () => {
   const { user, refreshProfile, role } = useAuth();
   const [telefono, setTelefono] = useState(user?.telefono || '');
@@ -21,14 +32,14 @@ export const ProfilePage: React.FC = () => {
   const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // Cambio de clave
+  // Password change state (HU-06 / RF-028)
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [pwdMsg, setPwdMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [savingPwd, setSavingPwd] = useState(false);
 
-  // Simulación regla RF-031
+  // RF-031 purchase restriction simulator state (HU-03)
   const [testCompraMsg, setTestCompraMsg] = useState<{
     status: number;
     title: string;
@@ -45,6 +56,9 @@ export const ProfilePage: React.FC = () => {
     );
   }
 
+  /**
+   * Submits updated contact phone and shipping address to PUT /api/v1/auth/me (HU-07).
+   */
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileMsg(null);
@@ -63,12 +77,26 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  /**
+   * Validates current and new password constraints and invokes PUT /api/v1/auth/change-password (HU-06).
+   * Ensures the new password matches confirmation and differs from the current password.
+   */
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPwdMsg(null);
 
+    if (newPassword.length < 6) {
+      setPwdMsg({ type: 'error', text: 'La nueva contraseña debe tener al menos 6 caracteres.' });
+      return;
+    }
+
     if (newPassword !== confirmNewPassword) {
       setPwdMsg({ type: 'error', text: 'Las nuevas contraseñas no coinciden.' });
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setPwdMsg({ type: 'error', text: 'La nueva contraseña debe ser diferente a la actual.' });
       return;
     }
 
@@ -92,6 +120,10 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  /**
+   * Calls POST /api/v1/compras/validar-permiso-compra-reserva to demonstrate
+   * role-based purchase restriction enforcement in real time (HU-03 / RF-031).
+   */
   const handleTestCompraRestriction = async () => {
     setTestingCompra(true);
     setTestCompraMsg(null);
@@ -123,7 +155,7 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto my-8 px-4 sm:px-6">
-      {/* Header Perfil */}
+      {/* Profile Header */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
@@ -157,7 +189,7 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Tarjeta de Saldo Disponible (RF-037) */}
+          {/* Virtual Wallet Card (RF-037) */}
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-4 rounded-xl shadow min-w-[220px]">
             <div className="flex items-center justify-between text-xs text-slate-300 mb-1">
               <span className="flex items-center space-x-1">
@@ -177,7 +209,7 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* HU-07: Actualizar Datos de Perfil y Envíos */}
+        {/* HU-07: Update Contact & Shipping Details */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
           <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-slate-100">
             <User className="w-5 h-5 text-blue-600" />
@@ -247,7 +279,7 @@ export const ProfilePage: React.FC = () => {
           </form>
         </div>
 
-        {/* HU-06: Cambio de Contraseña */}
+        {/* HU-06: Secure Password Update */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
           <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-slate-100">
             <Lock className="w-5 h-5 text-blue-600" />
@@ -330,7 +362,7 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* HU-03: Demostración Interactiva de Restricción RF-031 */}
+      {/* HU-03: Interactive RF-031 Restriction Demo */}
       <div className="mt-6 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
