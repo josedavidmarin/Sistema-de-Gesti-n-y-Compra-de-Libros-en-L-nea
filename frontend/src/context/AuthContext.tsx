@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, RoleType } from '../types';
 import { api } from '../services/api';
 
+/**
+ * Interface defining authentication context contract and state handlers.
+ */
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -16,17 +19,24 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Authentication and Session Management Provider.
+ * Enforces role-based security (RBAC) and handles Bearer JWT lifecycle.
+ */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  /**
+   * Fetches authenticated user profile data using current Bearer JWT token.
+   */
   const fetchProfile = async () => {
     try {
       const profile = await api.auth.getProfile();
       setUser(profile);
     } catch (err) {
-      console.error('Error cargando perfil:', err);
+      console.error('Session expired or profile fetch error:', err);
       logout();
     } finally {
       setIsLoading(false);
@@ -41,6 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [token]);
 
+  /**
+   * Authenticates user credentials against the FastAPI backend (HU-04).
+   */
   const login = async (email: string, pass: string) => {
     setIsLoading(true);
     try {
@@ -53,23 +66,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  /**
+   * Handles customer self-registration with automatic login (HU-01).
+   */
   const register = async (userData: any) => {
     setIsLoading(true);
     try {
       await api.auth.register(userData);
-      // Auto-login tras registro exitoso
+      // Auto-authenticate immediately following successful registration
       await login(userData.email, userData.password);
     } finally {
       setIsLoading(false);
     }
   };
 
+  /**
+   * Terminates active session and clears credentials (HU-05).
+   */
   const logout = () => {
+    // Notify server asynchronously if possible
+    api.auth.logout().catch(() => {});
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
   };
 
+  /**
+   * Refreshes active user profile data from backend.
+   */
   const refreshProfile = async () => {
     if (token) {
       await fetchProfile();
@@ -100,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth debe ser utilizado dentro de un AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
