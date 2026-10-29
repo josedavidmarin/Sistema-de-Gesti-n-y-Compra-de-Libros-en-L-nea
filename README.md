@@ -2,134 +2,157 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791.svg)](https://www.postgresql.org/)
-[![React](https://img.shields.io/badge/Frontend-React%20%2B%20TypeScript-61DAFB.svg)](https://react.dev/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite%20%2F%20PostgreSQL-336791.svg)](https://www.sqlite.org/)
+[![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20TypeScript-61DAFB.svg)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/UI-Tailwind%20CSS-38B2AC.svg)](https://tailwindcss.com/)
-[![Google Maps](https://img.shields.io/badge/API-Google%20Maps%20Platform-4285F4.svg)](https://developers.google.com/maps)
+[![Jupyter](https://img.shields.io/badge/Demo-Jupyter%20Notebook-F37626.svg)](https://jupyter.org/)
 [![UTP](https://img.shields.io/badge/UTP-IS873%20Laboratorio%20de%20Software-informational.svg)](https://www.utp.edu.co/)
 
-> **Repositorio Oficial de Entrega:** Nota 1 — Definición del Proyecto y Prueba de Concepto (PoC)  
+> **Repositorio Oficial de Entrega:** Nota 2 — Sprint Review 1: Primer Incremento Funcional  
 > **Asignatura:** IS873 – Laboratorio de Software (Semestre 2026-2)  
 > **Universidad Tecnológica de Pereira (UTP)** — Facultad de Ingenierías  
-> **Ponderación:** 30% de la calificación final  
-> **Fechas de Sustentación (Demo Day):** 13 y 15 de octubre de 2026  
+> **Ponderación:** 20% de la calificación final  
+> **Fechas de Sustentación:** 3 y 5 de noviembre de 2026  
 
 ---
 
-## 👥 Integrantes del Equipo
+## 👥 Integrantes del Equipo y Distribución del Sprint
 
-* **Jose David Marin Giraldo**
-* **Edwin Osorio Cartagena**
-* **Maicol Londono Hernandez**
+* **Jose David Marín Giraldo** (`josedavid.marin@utp.edu.co`) — Autenticación JWT, Sesión y Perfil (HU-04, HU-05, HU-07) [7 SP]
+* **Edwin Osorio Cartagena** — Autoservicio de Clientes y Validación de Contraseñas (HU-01, HU-06) [7 SP]
+* **Maicol Londoño Hernández** — Control Administrativo Root y Regla de Negocio RF-031 (HU-02, HU-03) [7 SP]
 
 ---
 
-## 📖 Resumen Ejecutivo del Proyecto
+## 🎯 Sprint 1 — Primer Incremento Funcional (21 Story Points)
 
-El **Sistema de Gestión y Compra de Libros en Línea** es una plataforma de comercio electrónico diseñada para resolver los cuellos de botella operativos que sufren las librerías omnicanal:
-1. **Control Granular por Copia Física:** Diferenciación entre el registro bibliográfico (`LIBRO`) y cada copia física tangible (`EJEMPLAR`), evitando inventarios fantasma y pérdidas por desincronización de bodegas y sucursales.
-2. **Expiración Automatizada de Reservas:** Eliminación del acaparamiento de stock mediante un worker en segundo plano que caduca automáticamente las reservas a las 24 horas y reincorpora los ejemplares al inventario comercial.
-3. **Logística Multisede con Google Maps:** Selección de retiro en tienda física con geolocalización de sucursales en Pereira y Bogotá, validación de existencias locales y cálculo geoespacial.
-4. **Módulo de Devoluciones con Código QR:** Tramitación ágil dentro del plazo legal de 8 días calendario, emitiendo salvoconductos digitales con QR firmado criptográficamente para su verificación presencial o recolección.
-5. **Seguridad y Control de Acceso (RBAC):** Separación estricta de privilegios entre Root (superadministrador), Administrador (inventario y soporte con restricción de compras personales), Cliente y Visitante.
+El objetivo del Sprint 1 fue construir y desplegar el núcleo operativo de seguridad, autenticación y control de acceso basado en roles (**RBAC**), garantizando que las cuentas operativas no puedan realizar compras personales (**RF-031**) en un entorno cliente-servidor ejecutable de principio a fin.
+
+### 📋 Historias de Usuario Comprometidas y Terminadas (100% Done)
+
+| ID | Historia de Usuario | Prioridad (MoSCoW) | Estimación | Responsable | Estado | Criterio de Aceptación Cumplido |
+| :---: | :--- | :---: | :---: | :--- | :---: | :--- |
+| **HU-01** | Registro de nuevos clientes con DNI único y contraseña cifrada (RF-027) | **MUST HAVE** | **5 SP** | Edwin Osorio | **DONE** | DNI y correo únicos en BD, contraseña hasheada con `bcrypt`. |
+| **HU-04** | Inicio de sesión con emisión de token Bearer JWT (RF-026, RF-028) | **MUST HAVE** | **3 SP** | Jose David Marín | **DONE** | JWT firmado criptográficamente, claims de rol y expiración de 24h. |
+| **HU-05** | Cierre de sesión y desvinculación local de credenciales | **MUST HAVE** | **1 SP** | Jose David Marín | **DONE** | Invocación de endpoint de revocación y limpieza en cliente. |
+| **HU-06** | Cambio seguro de contraseña con validación de clave anterior (RF-028) | **MUST HAVE** | **2 SP** | Edwin Osorio | **DONE** | Rechaza claves actuales erróneas e impide repetir la clave actual. |
+| **HU-07** | Consulta y actualización de datos de perfil, teléfono y dirección (RF-021) | **MUST HAVE** | **3 SP** | Jose David Marín | **DONE** | Endpoint `/me` autenticado con saldo virtual (\$150.000 COP). |
+| **HU-02** | Creación de Administradores por Superadmin Root con auditoría (RF-030) | **MUST HAVE** | **5 SP** | Maicol Londoño | **DONE** | Solo `ROOT` puede crear admins. Clientes bloqueados con HTTP 403. |
+| **HU-03** | Restricción estricta de compra/reserva para personal operativo (RF-031) | **MUST HAVE** | **2 SP** | Maicol Londoño | **DONE** | Middleware RBAC bloquea con HTTP 403 a Admin y Root; permite a Cliente. |
+
+---
+
+## 🚀 Cómo Ejecutar el Proyecto
+
+### Opción A: Lanzador Automático en un Solo Clic (Recomendado para Windows)
+En la raíz del repositorio, ejecute el script por lotes:
+```cmd
+start_project.bat
+```
+Este script:
+1. Inicia el servidor backend FastAPI en `http://localhost:8000`
+2. Inicia el servidor frontend Vite en `http://localhost:5173`
+3. Abre automáticamente la aplicación en su navegador web por defecto.
+
+---
+
+### Opción B: Ejecución Manual Paso a Paso
+
+#### 1. Iniciar el Backend (FastAPI + Uvicorn)
+```powershell
+cd backend
+.\venv\Scripts\Activate.ps1
+python run.py
+```
+* **API Raíz:** [http://localhost:8000](http://localhost:8000)
+* **Swagger UI Interactivo:** [http://localhost:8000/docs](http://localhost:8000/docs)
+* **ReDoc:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+#### 2. Iniciar el Frontend (React + TypeScript + Tailwind)
+```powershell
+cd frontend
+npm run dev
+```
+* **Aplicación Web:** [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🧪 Pruebas y Demostración Reproducible
+
+### 1. Notebook de Demostración Interactivo (Requisito Oficial de Sustentación)
+El proyecto incluye un Jupyter Notebook autocontenido que ejecuta y valida las 7 historias comprometidas en orden:
+```bash
+# Abrir el notebook en Jupyter Lab o VS Code:
+notebooks/demo_sprint1.ipynb
+```
+* Incluye celda inicial formal: **"Qué demuestra y qué NO demuestra todavía este incremento"**.
+* Ejecución paso a paso de cada historia con aserciones automáticas.
+
+### 2. Suite de Pruebas Automatizadas del API
+```powershell
+cd backend
+python test_sprint1_api.py
+```
+Ejecuta 10 pruebas de integración de extremo a extremo cubriendo el 100% de los criterios de aceptación del Sprint 1.
+
+---
+
+## 🔑 Credenciales Semilla para Pruebas y Sustentación
+
+Al inicializar el sistema se cargan automáticamente las siguientes cuentas con fines de prueba:
+
+| Rol | Correo Electrónico | Contraseña | DNI | Privilegios y Políticas |
+| :--- | :--- | :--- | :--- | :--- |
+| **ROOT** | `root@libreria.com` | `RootSecure2026!` | `0000000000` | Superadministrador. Crea administradores y audita nómina. Compra restringida (RF-031). |
+| **ADMINISTRADOR** | `admin.bodega@libreria.com` | `Admin2026!` | `9876543210` | Personal de almacén. Gestión operativa. Compra restringida (RF-031). |
+| **CLIENTE** | `cliente.demo@gmail.com` | `Cliente2026!` | `1088123456` | Lector registrado. Cuenta con saldo (\$150.000 COP) y compras autorizadas. |
+
+*(Nota: En la pantalla de Login del Frontend se disponen botones de autorelleno para alternar entre estos tres roles con un solo clic durante la sustentación en vivo).*
 
 ---
 
 ## 📂 Estructura del Repositorio
 
 ```text
-├── docs/                                  # Documentación formal del proyecto
-│   ├── IS873_Nota1_Definicion_del_Proyecto_Consolidado.pdf  # Documento maestro consolidado formal
-│   ├── IS873_Nota1_Definicion_del_Proyecto_Consolidado.docx # Versión editable Word
-│   ├── diagramas/                         # Diagramas C4 y Casos de Uso en alta definición
-│   │   ├── diagrama_01_casos_de_uso.png   # Trazabilidad cromática por actor
-│   │   ├── diagrama_02_c4_contexto.png    # C4 Nivel 1 (Contexto de Sistema - Alto Contraste)
-│   │   └── diagrama_03_c4_contenedores.png# C4 Nivel 2 (Contenedores de Solución - Alto Contraste)
-│   └── mockups/                           # Wireframes y pantallas del alcance Must Have
-│       ├── mockup_01_registro_usuario.png
-│       ├── mockup_02_registro_admin.png
-│       ├── mockup_03_restriccion_admin.png
-│       ├── mockup_04_login.png
-│       ├── mockup_05_registro_libro.png
-│       ├── mockup_06_eliminar_libro.png
-│       ├── mockup_07_editar_libro.png
-│       ├── mockup_08_inventario_stock.png
-│       ├── mockup_09_busqueda_catalogo.png
-│       ├── mockup_10_carrito_compras.png
-│       ├── mockup_11_cancelar_compra.png
-│       └── mockup_12_saldo_disponible.png
+Sistema-de-Gestion-y-Compra-de-Libros/
 │
-├── poc/                                   # Prueba de Concepto (Validación del Riesgo Más Crítico)
-│   ├── README.md                          # Documentación completa de la PoC, hipótesis y resultados
-│   └── poc_reserva_concurrencia.py        # Script ejecutable multihilo y scheduler de 24h
+├── backend/                               # API RESTful con FastAPI y SQLAlchemy
+│   ├── app/
+│   │   ├── api/                           # Enrutadores y dependencias de seguridad (RBAC)
+│   │   ├── core/                          # Configuración, JWT y hashing bcrypt
+│   │   ├── db/                            # Inicialización y datos semilla
+│   │   ├── models/                        # Modelos relacionales ORM (User, RoleEnum)
+│   │   └── schemas/                       # Esquemas Pydantic tipados y documentados en inglés
+│   ├── requirements.txt                   # Dependencias de Python
+│   ├── run.py                             # Punto de entrada del servidor Uvicorn
+│   └── test_sprint1_api.py                # Suite de pruebas automatizadas del Sprint 1
 │
-├── .gitignore                             # Filtro de artefactos temporales y base de datos local
-└── README.md                              # Presentación principal del repositorio
+├── frontend/                              # SPA React + TypeScript + Vite + Tailwind CSS
+│   ├── src/
+│   │   ├── components/                    # Barra de navegación responsiva (Navbar)
+│   │   ├── context/                       # Contexto global de sesión y RBAC (AuthContext)
+│   │   ├── pages/                         # Pantallas (Home, Login, Register, Profile, Admin)
+│   │   └── services/                      # Cliente HTTP Axios modular
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── notebooks/                             # Demostraciones interactivas reproducibles
+│   └── demo_sprint1.ipynb                 # Notebook oficial de sustentación del Sprint 1
+│
+├── docs/                                  # Especificación formal, diagramas C4 y actas
+│   └── IS873_Nota1_Definicion_del_Proyecto_Consolidado.pdf
+│
+├── poc/                                   # Validación del riesgo técnico crítico (Nota 1)
+│   ├── poc_reserva_concurrencia.py        # Simulación multihilo y scheduler de 24h
+│   └── README.md
+│
+├── start_project.bat                      # Lanzador automático integral
+└── README.md                              # Documento de presentación principal
 ```
 
 ---
 
-## 🧪 Prueba de Concepto (PoC) — Validación del Riesgo Técnico Más Crítico
+## 📑 Trazabilidad y Siguiente Incremento (Sprint 2 / Nota 3)
 
-### Formulación de la Hipótesis de Riesgo
-> *¿Es viable garantizar transacciones estrictamente atómicas (evitando sobreventas) cuando múltiples clientes intentan reservar o comprar concurrentemente el último ejemplar disponible de un libro, mientras un scheduler asíncrono libera automáticamente copias reservadas que hayan superado las 24 horas?*
-
-### Cómo Ejecutar la PoC
-
-La PoC ha sido diseñada como un artefacto mínimo autocontenido utilizando la biblioteca estándar de Python (`sqlite3`, `threading`, `time`, `datetime`), sin requerir instalación de paquetes pesados.
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/josedavidmarin/Sistema-de-Gesti-n-y-Compra-de-Libros-en-L-nea.git
-cd Sistema-de-Gestion-y-Compra-de-Libros/poc
-
-# 2. Ejecutar la prueba
-python poc_reserva_concurrencia.py
-```
-
-### Resultados Experimentales Obtenidos
-* **Concurrencia Extrema:** 10 hilos simultáneos compitiendo por 2 ejemplares físicos disponibles.
-* **Aprobadas:** Exactamente 2 reservas exitosas asignadas a identificadores de ejemplar únicos (`EJE-001`, `EJE-002`).
-* **Rechazadas con Notificación Limpia:** 8 reservas denegadas ordenadamente por stock agotado en **27 milisegundos**.
-* **Integridad Garantizada:** 0 sobreventas, 0 inconsistencias de base de datos.
-* **Worker en Segundo Plano (Scheduler 24h):** Detección automática de reservas simuladas vencidas, cambio de estado a `DISPONIBLE` y restauración del stock a 2 unidades sin intervención manual.
-
-Para mayores detalles técnicos, consulte el documento dedicado en [`poc/README.md`](file:///C:/backup%20D/Desktop/U/LAB/Sistema-de-Gestion-y-Compra-de-Libros/poc/README.md).
-
----
-
-## 📋 Priorización MoSCoW del Backlog (39 Requerimientos)
-
-| Clasificación | Cantidad | % del Total | Justificación y Cobertura de Requerimientos |
-|---|:---:|:---:|---|
-| **MUST HAVE** | **17** | **43.6%** | **Innegociables para el MVP:** CRUD de inventario por copia física (`RF-001` a `005`), compras transaccionales atómicas (`RF-008`, `012`, `013`), política de reservas de 24h (`RF-009`, `010`, `011`), y seguridad RBAC (`RF-026`, `027`, `028`, `030`, `031`). Sin estos elementos no existe producto funcional. |
-| **SHOULD HAVE** | **12** | **30.8%** | **Alto valor operativo:** Historial de compras (`RF-015`), devoluciones con QR y límite de 8 días (`RF-016` a `020`), recogida en tienda física (`RF-023`, `024`), búsqueda avanzada (`RF-035`) y tokenización (`RF-036`). |
-| **COULD HAVE** | **7** | **17.9%** | **Deseables si el cronograma lo permite:** Mapa interactivo con Google Maps Platform (`RF-025`), bonos de cumpleaños (`RF-032`), catálogo para suscriptores (`RF-033`), chat con administrador (`RF-034`) y bot recomendador (`RF-038`). |
-| **WON'T HAVE** | **3** | **7.7%** | **Explícitamente fuera de alcance del semestre:** Realidad Aumentada (`RF-039`), pasarela bancaria con dinero real (se usará pasarela simulada sandbox) y telemática vehicular en vivo. |
-
----
-
-## 🛠️ Stack Tecnológico Justificado
-
-* **Backend — Python con FastAPI:** Provee alto rendimiento asíncrono (ASGI), tipado estricto mediante Pydantic y documentación viva Swagger OpenAPI lista para pruebas de integración.
-* **Base de Datos — PostgreSQL:** Motor relacional robusto con transacciones ACID completas y soporte nativo de bloqueo de registros a nivel de fila (`SELECT ... FOR UPDATE`), esencial para el control de inventarios concurrentes. Normalizado en 34 entidades.
-* **Frontend — React con Vite, TypeScript y Tailwind CSS:** Arquitectura modular basada en componentes, reactividad fluida para el carrito de compras y diseño Mobile-First adaptable.
-* **Worker en Segundo Plano — APScheduler:** Tareas programadas de expiración de reservas (cada 15 min) dentro del ecosistema liviano de Python, eliminando la sobrecarga operativa de Redis/Celery para el alcance del curso.
-* **Geolocalización — Google Maps Platform API:** Integración de Mapas y Rutas aprovechando la clave de demostración académica (*Maps Demo Key*) para visualización de sucursales y cálculo de tienda más cercana.
-
----
-
-## 📑 Documento Maestro Consolidado
-
-La especificación completa de la entrega se encuentra consolidada en el archivo formal:
-👉 **[`docs/IS873_Nota1_Definicion_del_Proyecto_Consolidado.pdf`](file:///C:/backup%20D/Desktop/U/LAB/Sistema-de-Gestion-y-Compra-de-Libros/docs/IS873_Nota1_Definicion_del_Proyecto_Consolidado.pdf)**
-
-Contenido estructurado en 8 secciones:
-1. Planteamiento del Proyecto (Problema, Usuarios, Alcance, Restricciones).
-2. Levantamiento Completo de Requerimientos (39 RFs y 11 RNFs).
-3. Casos de Uso Críticos a 3 Niveles de Cockburn y Diagrama General con diferenciación cromática.
-4. Priorización MoSCoW y Defensa Individual de los 17 Must Have.
-5. Diseño Preliminar de la Solución (C4 Nivel 1 y 2, Modelo Relacional de 34 Tablas, Mockups Visuales y Stack).
-6. Product Backlog Inicial Priorizado (Sprints 1 y 2 con estimación en Story Points).
-7. Prueba de Concepto Funcional (PoC) sobre el supuesto técnico más riesgoso.
-8. Respuestas para el Comité Evaluador (Demo Day).
+* **Tablero Kanban/Scrum:** Proyecto gestionado en GitHub Projects con trazabilidad de tarjetas a PRs y commits.
+* **Historias transferidas al Sprint 2 (27 Story Points):** Módulo de Gestión de Inventario y Catálogo por copia física (`HU-10` Registro Libro, `HU-10b` Código Único Ejemplar, `HU-11` Baja, `HU-12` Edición, `HU-13` Control de Stock y `HU-14` Vista de Inventario).
