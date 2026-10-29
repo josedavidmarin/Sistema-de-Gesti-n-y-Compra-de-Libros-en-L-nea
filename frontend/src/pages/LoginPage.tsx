@@ -22,8 +22,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onGoToRegister 
       await login(email, password);
       onSuccess();
     } catch (err: any) {
+      console.error('Error en autenticación:', err);
+      const serverDetail = err.response?.data?.detail;
+      const networkMsg = err.message ? `(${err.message})` : '';
       setError(
-        err.response?.data?.detail || 'Error al iniciar sesión. Verifique sus credenciales.'
+        serverDetail || `Error al iniciar sesión. ${networkMsg}`
       );
     } finally {
       setLoading(false);
