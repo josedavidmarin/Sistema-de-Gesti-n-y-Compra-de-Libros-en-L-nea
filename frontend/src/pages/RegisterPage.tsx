@@ -1,12 +1,25 @@
+/**
+ * @file RegisterPage.tsx
+ * @description Client registration view implementing user story HU-01 (RF-027, RF-029).
+ * Provides form validation for unique national ID (DNI), email, contact details,
+ * password confirmation, and Colombian Law 1581 (Habeas Data) consent.
+ */
+
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { UserPlus, Mail, Lock, User, Phone, MapPin, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface RegisterPageProps {
+  /** Callback triggered after successful registration and automatic login */
   onSuccess: () => void;
+  /** Callback to navigate to the login screen */
   onGoToLogin: () => void;
 }
 
+/**
+ * Registration page component for new store clients (HU-01).
+ * Enforces client-side validation before submitting credentials to POST /api/v1/auth/register.
+ */
 export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLogin }) => {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
@@ -23,13 +36,30 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Updates form state when an input field value changes.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Validates registration fields (DNI length, password match, Habeas Data consent)
+   * and submits the new client registration request (HU-01 / RF-027).
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (formData.dni.trim().length < 5) {
+      setError('El Documento de Identidad (DNI) debe contener al menos 5 caracteres.');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas ingresadas no coinciden.');
@@ -44,12 +74,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
     setLoading(true);
     try {
       await register({
-        dni: formData.dni,
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        email: formData.email,
-        telefono: formData.telefono || undefined,
-        direccion: formData.direccion || undefined,
+        dni: formData.dni.trim(),
+        nombre: formData.nombre.trim(),
+        apellido: formData.apellido.trim(),
+        email: formData.email.trim(),
+        telefono: formData.telefono.trim() || undefined,
+        direccion: formData.direccion.trim() || undefined,
         password: formData.password,
       });
       onSuccess();
@@ -61,6 +91,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
       setLoading(false);
     }
   };
+
+  const passwordsMatch =
+    formData.password.length >= 6 &&
+    formData.confirmPassword.length >= 6 &&
+    formData.password === formData.confirmPassword;
 
   return (
     <div className="max-w-2xl mx-auto my-10 px-4">
@@ -84,7 +119,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* DNI */}
+            {/* National ID (DNI) */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Documento de Identidad (DNI) *
@@ -97,6 +132,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
                   type="text"
                   name="dni"
                   required
+                  minLength={5}
                   value={formData.dni}
                   onChange={handleChange}
                   placeholder="Ej. 1088123456"
@@ -105,7 +141,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
               </div>
             </div>
 
-            {/* Correo */}
+            {/* Email Address */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Correo Electrónico *
@@ -126,7 +162,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
               </div>
             </div>
 
-            {/* Nombre */}
+            {/* First Name */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Nombres *
@@ -147,7 +183,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
               </div>
             </div>
 
-            {/* Apellido */}
+            {/* Last Name */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Apellidos *
@@ -168,7 +204,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
               </div>
             </div>
 
-            {/* Teléfono */}
+            {/* Contact Phone */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Teléfono de Contacto
@@ -188,7 +224,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
               </div>
             </div>
 
-            {/* Dirección */}
+            {/* Shipping Address (RF-021) */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Dirección de Correspondencia (RF-021)
@@ -250,10 +286,16 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
                   className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                 />
               </div>
+              {passwordsMatch && (
+                <p className="text-[11px] text-emerald-600 font-medium mt-1 flex items-center space-x-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Las contraseñas coinciden</span>
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Habeas Data */}
+          {/* Habeas Data Consent */}
           <div className="pt-2">
             <label className="flex items-start space-x-2 text-xs text-slate-600 cursor-pointer">
               <input
