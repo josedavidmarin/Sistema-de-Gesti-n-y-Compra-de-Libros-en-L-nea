@@ -203,3 +203,40 @@
 * **Backend:** `backend/app/api/v1/endpoints/compras.py`, `backend/app/api/deps.py` (`verify_client_only`)
 * **Frontend:** `frontend/src/pages/ProfilePage.tsx` (Simulador de regla RF-031)
 * **Pruebas:** `backend/test_sprint1_api.py` (Test 10), `notebooks/demo_sprint1.ipynb` (Sección HU-03)
+
+---
+
+## 📦 Columna `Product Backlog` (Historias Futuras — Sprints 2, 3 y 4)
+
+Estas tarjetas permanecen en la columna **`Product Backlog`** durante el Sprint 1 para evidenciar la planeación iterativa del proyecto completo:
+
+### 🔹 Sprint 2 — Catálogo de Libros e Inventario
+* **`[HU-08] Consulta y búsqueda avanzada de libros en el catálogo (RF-001 / RF-005)`**
+  * **Prioridad:** `Must Have` | **Estimación:** `5 SP`
+  * **Descripción:** Como visitante o cliente, quiero buscar y filtrar libros por título, autor, categoría, ISBN y rango de precio para encontrar ejemplares disponibles.
+* **`[HU-09] Gestión CRUD de libros e inventario por Administrador (RF-002 / RF-003 / RF-004)`**
+  * **Prioridad:** `Must Have` | **Estimación:** `5 SP`
+  * **Descripción:** Como Administrador, quiero registrar nuevos libros, actualizar su stock, estado (nuevo/usado) y precio, o darlos de baja para mantener el catálogo al día.
+* **`[HU-10] Vista de detalle de libro y disponibilidad en tiempo real (RF-006)`**
+  * **Prioridad:** `Should Have` | **Estimación:** `3 SP`
+  * **Descripción:** Como cliente, quiero ver la ficha técnica completa de un libro (sinopsis, editorial, páginas, stock disponible) antes de reservarlo o comprarlo.
+
+### 🔹 Sprint 3 — Carrito, Reservas y Compras con Monedero Virtual
+* **`[HU-11] Reserva temporal de libros hasta por 24 horas (RF-010 / RF-012)`**
+  * **Prioridad:** `Must Have` | **Estimación:** `5 SP`
+  * **Descripción:** Como cliente autenticado, quiero reservar un libro disponible descontándolo temporalmente del stock para asegurar mi ejemplar antes de pagar.
+* **`[HU-12] Carrito de compras y pago con saldo del monedero virtual (RF-015 / RF-022)`**
+  * **Prioridad:** `Must Have` | **Estimación:** `8 SP`
+  * **Descripción:** Como cliente, quiero agregar libros al carrito y pagar usando el saldo de mi monedero virtual validando saldo suficiente y stock.
+* **`[HU-13] Recarga de saldo en monedero virtual y extracto de movimientos (RF-021)`**
+  * **Prioridad:** `Should Have` | **Estimación:** `3 SP`
+  * **Descripción:** Como cliente, quiero recargar saldo en mi monedero virtual y consultar el historial de transacciones.
+
+### 🔹 Sprint 4 — Despachos, Devoluciones y mensajería/foros
+* **`[HU-14] Gestión de estados de envío y seguimiento de pedidos (RF-018 / RF-019)`**
+  * **Prioridad:** `Should Have` | **Estimación:** `5 SP`
+  * **Descripción:** Como cliente y administrador, quiero consultar y actualizar el estado del pedido (*En preparación*, *Enviado*, *Entregado*).
+* **`[HU-15] Solicitud y gestión de devoluciones de compras (RF-020)`**
+  * **Prioridad:** `Could Have` | **Estimación:** `3 SP`
+  * **Descripción:** Como cliente, quiero solicitar la devolución de un libro dentro del plazo permitido y recibir el reembolso en mi monedero virtual.
+

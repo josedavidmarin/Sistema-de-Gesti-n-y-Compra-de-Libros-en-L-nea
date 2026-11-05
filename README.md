@@ -16,6 +16,19 @@
 
 ---
 
+## 🌐 Despliegue en Vivo (Producción en la Nube)
+
+El primer incremento funcional se encuentra desplegado y operativo en la nube con integración continua (CI/CD):
+
+* **🎨 Aplicación Web (Frontend en Vercel):**  
+  👉 **[https://sistema-de-gestion-three.vercel.app/](https://sistema-de-gestion-three.vercel.app/)**
+* **⚙️ API Backend y Swagger UI (FastAPI en Render):**  
+  👉 **[https://libreria-backend-yhdj.onrender.com/docs](https://libreria-backend-yhdj.onrender.com/docs)**
+* **🐘 Base de Datos Persistente:**  
+  👉 **PostgreSQL gestionado en Supabase** (con respaldo local en SQLite para pruebas offline).  
+
+---
+
 ## 👥 Integrantes del Equipo y Distribución del Sprint
 
 * **Jose David Marín Giraldo** (`josedavid.marin@utp.edu.co`) — Autenticación JWT, Sesión y Perfil (HU-04, HU-05, HU-07) [7 SP]

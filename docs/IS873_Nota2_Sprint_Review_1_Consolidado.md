@@ -17,7 +17,10 @@
 * **Edwin Osorio Cartagena** — *Backend Developer / QA & Testing Lead*
 * **Maicol Londoño Hernández** — *Security Specialist / DevOps & Fullstack Developer*
 
-### 🔗 Enlaces Oficiales de Entrega
+### 🔗 Enlaces Oficiales de Entrega y Producción en Vivo
+* **Aplicación Web en Producción (Vercel):** [https://sistema-de-gestion-three.vercel.app/](https://sistema-de-gestion-three.vercel.app/)
+* **API Backend y Documentación Swagger (Render):** [https://libreria-backend-yhdj.onrender.com/docs](https://libreria-backend-yhdj.onrender.com/docs)
+* **Base de Datos en la Nube:** PostgreSQL en Supabase (con respaldo local SQLite)
 * **Repositorio en GitHub:** [https://github.com/josedavidmarin/Sistema-de-Gesti-n-y-Compra-de-Libros-en-L-nea.git](https://github.com/josedavidmarin/Sistema-de-Gesti-n-y-Compra-de-Libros-en-L-nea.git)
 * **Tablero Kanban/Scrum (GitHub Projects):** Proyecto activo vinculado a PRs e Issues
 * **Notebook Interactivo de Demostración:** `notebooks/demo_sprint1.ipynb`
