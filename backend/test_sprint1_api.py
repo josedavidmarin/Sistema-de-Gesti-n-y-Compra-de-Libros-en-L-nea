@@ -162,8 +162,28 @@ def test_sprint1_complete_flow() -> None:
         assert res.json()["rol"] == "ADMINISTRADOR"
         print(f"  -> PASÓ: Administrador creado por Root con auditoría. Rol: {res.json()['rol']}")
 
+    # Test 8b: HU-02 Audit & Account Toggle - List admins and verify toggle-status controls
+    res_users = client.get("/api/v1/admin/users?rol=ADMINISTRADOR", headers={"Authorization": f"Bearer {root_token}"})
+    assert res_users.status_code == 200
+    admins_list = res_users.json()
+    assert len(admins_list) >= 1 and all(u["rol"] == "ADMINISTRADOR" for u in admins_list)
+    target_admin = next(u for u in admins_list if u["email"] == "admin.circunvalar@libreria.com")
+    print(f"  -> PASÓ (8b): Padrón filtrado por ADMINISTRADOR ({len(admins_list)} registros ordenados).")
+
+    # Root cannot deactivate itself (HTTP 400)
+    root_id = root_data["user_id"]
+    res_self_toggle = client.put(f"/api/v1/admin/users/{root_id}/toggle-status", headers={"Authorization": f"Bearer {root_token}"})
+    assert res_self_toggle.status_code == 400
+
+    # Suspend and reactivate target admin cleanly
+    res_suspend = client.put(f"/api/v1/admin/users/{target_admin['id']}/toggle-status", headers={"Authorization": f"Bearer {root_token}"})
+    assert res_suspend.status_code == 200
+    res_reactivate = client.put(f"/api/v1/admin/users/{target_admin['id']}/toggle-status", headers={"Authorization": f"Bearer {root_token}"})
+    assert res_reactivate.status_code == 200
+    print("  -> PASÓ (8c): Control de suspensión/reactivación de cuentas por Root y bloqueo de autodesactivación.")
+
     # Test 9: HU-02 Security - Client attempts to create an Administrator (Must fail with 403 Forbidden)
-    print("\n[TEST 9] HU-02 Seguridad: Intento no autorizado de crear Admin por un Cliente...")
+    print("\n[TEST 9] HU-02 Seguridad: Intento no autorizado de crear Admin o listar padrón...")
     res = client.post("/api/v1/admin/create-admin", headers={"Authorization": f"Bearer {client_token}"}, json={
         "dni": "999999999",
         "email": "hacker@libreria.com",
@@ -172,6 +192,8 @@ def test_sprint1_complete_flow() -> None:
         "password": "Password123"
     })
     assert res.status_code == 403, f"Se esperaba 403, se obtuvo: {res.status_code}"
+    res_cli_audit = client.get("/api/v1/admin/users", headers={"Authorization": f"Bearer {client_token}"})
+    assert res_cli_audit.status_code == 403, f"Se esperaba 403 para listado de cliente, se obtuvo: {res_cli_audit.status_code}"
     print("  -> PASÓ: Bloqueado con HTTP 403 Forbidden por RBAC (se requiere rol ROOT).")
 
     # Test 10: HU-03 - Strict purchase restriction for Administrators and Root (RF-031)

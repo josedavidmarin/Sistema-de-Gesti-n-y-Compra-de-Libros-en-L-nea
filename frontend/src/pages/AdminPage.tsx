@@ -1,3 +1,10 @@
+/**
+ * @file AdminPage.tsx
+ * @description Superadmin Root control panel implementing user story HU-02 (RF-030).
+ * Provides exclusive Administrator account provisioning, full system user audit listing,
+ * role filtering, and account activation/suspension controls.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -15,11 +22,16 @@ import {
   Power
 } from 'lucide-react';
 
+/**
+ * Superadmin Root dashboard component (HU-02 / RF-030).
+ * Restricts rendering to users holding the ROOT role and connects to /api/v1/admin/*.
+ */
 export const AdminPage: React.FC = () => {
   const { role, user: currentUser } = useAuth();
   const [usersList, setUsersList] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [formMsg, setFormMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [auditMsg, setAuditMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [creatingAdmin, setCreatingAdmin] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -31,13 +43,16 @@ export const AdminPage: React.FC = () => {
     password: '',
   });
 
+  /**
+   * Fetches the registered system users from GET /api/v1/admin/users for auditing.
+   */
   const loadUsers = async () => {
     setLoadingUsers(true);
     try {
       const data = await api.admin.getUsers();
       setUsersList(data);
     } catch (err) {
-      console.error('Error cargando usuarios:', err);
+      console.error('Error loading system users:', err);
     } finally {
       setLoadingUsers(false);
     }
@@ -62,13 +77,32 @@ export const AdminPage: React.FC = () => {
     );
   }
 
+  /**
+   * Submits new administrator registration payload to POST /api/v1/admin/create-admin (HU-02).
+   */
   const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormMsg(null);
+
+    if (formData.dni.trim().length < 5) {
+      setFormMsg({
+        type: 'error',
+        text: 'El DNI debe contener al menos 5 caracteres.',
+      });
+      return;
+    }
+
     setCreatingAdmin(true);
 
     try {
-      const created = await api.admin.createAdmin(formData);
+      const created = await api.admin.createAdmin({
+        ...formData,
+        dni: formData.dni.trim(),
+        email: formData.email.trim(),
+        nombre: formData.nombre.trim(),
+        apellido: formData.apellido.trim(),
+        telefono: formData.telefono.trim() || undefined,
+      });
       setFormMsg({
         type: 'success',
         text: `Administrador creado exitosamente: ${created.nombre} ${created.apellido} (${created.email}) con rol ADMINISTRADOR.`,
@@ -92,18 +126,26 @@ export const AdminPage: React.FC = () => {
     }
   };
 
+  /**
+   * Activates or suspends a target user account via PUT /api/v1/admin/users/{id}/toggle-status.
+   */
   const handleToggleStatus = async (targetId: number) => {
+    setAuditMsg(null);
     try {
-      await api.admin.toggleStatus(targetId);
+      const res = await api.admin.toggleStatus(targetId);
+      setAuditMsg({ type: 'success', text: res.mensaje });
       await loadUsers();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Error al modificar el estado de la cuenta.');
+      setAuditMsg({
+        type: 'error',
+        text: err.response?.data?.detail || 'Error al modificar el estado de la cuenta.',
+      });
     }
   };
 
   return (
     <div className="max-w-6xl mx-auto my-8 px-4 sm:px-6 space-y-8">
-      {/* Banner Root */}
+      {/* Root Control Panel Banner */}
       <div className="bg-gradient-to-r from-rose-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-md">
         <div className="flex items-center space-x-3 mb-2">
           <div className="p-2 bg-rose-500/20 border border-rose-400/30 rounded-xl">
@@ -119,7 +161,7 @@ export const AdminPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Formulario Creación de Administrador (Mockup 5.4) */}
+        {/* Administrator Provisioning Form */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:col-span-1">
           <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-slate-100">
             <UserPlus className="w-5 h-5 text-rose-600" />
@@ -155,6 +197,7 @@ export const AdminPage: React.FC = () => {
                 <input
                   type="text"
                   required
+                  minLength={5}
                   value={formData.dni}
                   onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
                   placeholder="Ej. 9876543210"
@@ -185,6 +228,7 @@ export const AdminPage: React.FC = () => {
               <input
                 type="text"
                 required
+                minLength={2}
                 value={formData.nombre}
                 onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                 placeholder="Laura Patricia"
@@ -197,6 +241,7 @@ export const AdminPage: React.FC = () => {
               <input
                 type="text"
                 required
+                minLength={2}
                 value={formData.apellido}
                 onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
                 placeholder="Montoya Gómez"
@@ -247,7 +292,7 @@ export const AdminPage: React.FC = () => {
           </form>
         </div>
 
-        {/* Listado de Usuarios y Auditoría */}
+        {/* System User Audit Directory */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:col-span-2">
           <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
             <div className="flex items-center space-x-2">
@@ -263,6 +308,23 @@ export const AdminPage: React.FC = () => {
               Recargar lista
             </button>
           </div>
+
+          {auditMsg && (
+            <div
+              className={`mb-4 p-3 rounded-xl text-xs flex items-center space-x-2 ${
+                auditMsg.type === 'success'
+                  ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                  : 'bg-rose-50 border border-rose-200 text-rose-800'
+              }`}
+            >
+              {auditMsg.type === 'success' ? (
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              ) : (
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              )}
+              <span>{auditMsg.text}</span>
+            </div>
+          )}
 
           {loadingUsers ? (
             <div className="text-center py-12 text-slate-400 text-sm">Cargando usuarios...</div>
