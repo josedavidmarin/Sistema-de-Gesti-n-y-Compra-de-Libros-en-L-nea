@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [token]);
 
   /**
-   * Authenticates user credentials against the FastAPI backend (HU-04).
+   * Authenticates user credentials against the backend API.
    */
   const login = async (email: string, pass: string) => {
     setIsLoading(true);
@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   /**
-   * Handles customer self-registration with automatic login (HU-01).
+   * Handles customer self-registration with automatic login.
    */
   const register = async (userData: any) => {
     setIsLoading(true);
@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   /**
-   * Terminates active session and clears credentials (HU-05).
+   * Terminates active session and clears credentials.
    */
   const logout = () => {
     // Notify server asynchronously if possible

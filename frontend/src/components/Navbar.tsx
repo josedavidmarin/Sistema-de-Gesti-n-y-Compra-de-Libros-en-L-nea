@@ -60,15 +60,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <BookOpen className="w-6 h-6" />
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-lg text-slate-900 tracking-tight">
-                Librería en Línea
+            <div>
+              <span className="font-extrabold text-lg text-slate-900 tracking-tight">
+                Librería Central
               </span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Sprint 2 • MVP Integrado
-              </span>
+              <p className="text-[11px] text-slate-500 font-medium">Lectura, Cultura & Saber</p>
             </div>
-            <p className="text-xs text-slate-500">IS873 - Laboratorio de Software (UTP)</p>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 /**
  * @file AdminPage.tsx
- * @description Superadmin Root control panel implementing user story HU-02 (RF-030).
+ * @description Superadmin Root control panel.
  * Provides exclusive Administrator account provisioning, full system user audit listing,
  * role filtering, and account activation/suspension controls.
  */
@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 
 /**
- * Superadmin Root dashboard component (HU-02 / RF-030).
+ * Superadmin Root dashboard component.
  * Restricts rendering to users holding the ROOT role and connects to /api/v1/admin/*.
  */
 export const AdminPage: React.FC = () => {
@@ -70,15 +70,15 @@ export const AdminPage: React.FC = () => {
         <ShieldCheck className="w-12 h-12 text-rose-500 mx-auto mb-3" />
         <h2 className="text-xl font-bold text-rose-800">Acceso Exclusivo Superadmin Root</h2>
         <p className="text-sm text-rose-600 mt-2">
-          De conformidad con el requerimiento RF-030 (HU-02), únicamente el rol <strong>ROOT</strong> tiene
-          privilegios para dar de alta nuevo personal administrativo o auditar la nómina de usuarios.
+          Únicamente los usuarios con perfil de <strong>SUPERADMINISTRADOR ROOT</strong> tienen
+          privilegios para dar de alta nuevo personal administrativo o auditar las cuentas corporativas.
         </p>
       </div>
     );
   }
 
   /**
-   * Submits new administrator registration payload to POST /api/v1/admin/create-admin (HU-02).
+   * Submits new administrator registration payload to POST /api/v1/admin/create-admin.
    */
   const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,7 +154,7 @@ export const AdminPage: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold">Panel de Control Root — Seguridad y Personal</h1>
             <p className="text-xs text-rose-200">
-              HU-02 / RF-030: Creación y Auditoría de Cuentas Administrativas
+              Gestión Integral de Usuarios, Roles y Seguridad Corporativa
             </p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export const AdminPage: React.FC = () => {
           <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-slate-100">
             <UserPlus className="w-5 h-5 text-rose-600" />
             <h2 className="text-base font-bold text-slate-800">
-              Crear Nuevo Administrador (RF-030)
+              Registrar Nuevo Colaborador Administrativo
             </h2>
           </div>
 

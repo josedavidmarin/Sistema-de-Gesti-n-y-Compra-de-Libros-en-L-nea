@@ -139,7 +139,7 @@ export const InventoryAdminPage: React.FC = () => {
       await fetchBooks();
       setFeedback({
         type: 'success',
-        message: `Ejemplar físico dado de baja exitosamente (RF-004).`,
+        message: `Ejemplar físico dado de baja exitosamente.`,
       });
     } catch (err: any) {
       setFeedback({
@@ -184,7 +184,7 @@ export const InventoryAdminPage: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Control de Inventario y Ejemplares Físicos</h1>
             <p className="text-xs text-slate-500">
-              Gestión granular por copia única con código LIB-XXX-EJYYY (RF-001, RF-002, RF-004, RF-005, RF-006).
+              Gestión granular por copia única con trazabilidad de código de barras y control de sedes.
             </p>
           </div>
         </div>
@@ -339,7 +339,7 @@ export const InventoryAdminPage: React.FC = () => {
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                   <div className="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
                     <PlusCircle className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Generar Nuevos Ejemplares Físicos (RF-005)</span>
+                    <span>Generar Nuevos Ejemplares Físicos</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -393,7 +393,7 @@ export const InventoryAdminPage: React.FC = () => {
                                 <button
                                   onClick={() => handleDecommissionCopy(copy.id)}
                                   className="text-[10px] text-rose-600 hover:text-rose-800 hover:underline font-semibold"
-                                  title="Dar de baja este ejemplar físico (RF-004)"
+                                  title="Dar de baja este ejemplar físico"
                                 >
                                   Dar de Baja
                                 </button>

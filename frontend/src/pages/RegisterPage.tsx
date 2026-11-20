@@ -1,6 +1,6 @@
 /**
  * @file RegisterPage.tsx
- * @description Client registration view implementing user story HU-01 (RF-027, RF-029).
+ * @description Client registration view.
  * Provides form validation for unique national ID (DNI), email, contact details,
  * password confirmation, and Colombian Law 1581 (Habeas Data) consent.
  */
@@ -17,7 +17,7 @@ interface RegisterPageProps {
 }
 
 /**
- * Registration page component for new store clients (HU-01).
+ * Registration page component for new store clients.
  * Enforces client-side validation before submitting credentials to POST /api/v1/auth/register.
  */
 export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLogin }) => {
@@ -45,7 +45,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
 
   /**
    * Validates registration fields (DNI length, password match, Habeas Data consent)
-   * and submits the new client registration request (HU-01 / RF-027).
+   * and submits the new client registration request.
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +106,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
           </div>
           <h2 className="text-2xl font-bold text-slate-900">Registro de Cliente</h2>
           <p className="text-sm text-slate-500 mt-1">
-            Cree su cuenta para comprar, reservar libros y gestionar envíos (RF-027)
+            Cree su cuenta para comprar libros, acceder a su monedero y gestionar envíos a domicilio
           </p>
         </div>
 
@@ -224,10 +224,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
               </div>
             </div>
 
-            {/* Shipping Address (RF-021) */}
+            {/* Shipping Address */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Dirección de Correspondencia (RF-021)
+                Dirección de Correspondencia y Entrega
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">

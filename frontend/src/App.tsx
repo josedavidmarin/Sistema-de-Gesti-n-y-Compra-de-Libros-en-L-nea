@@ -54,13 +54,34 @@ const AppContent: React.FC = () => {
         {currentPage === 'admin' && <AdminPage />}
       </main>
 
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>
-            <strong>IS873 – Laboratorio de Software (2026-2)</strong> • Universidad Tecnológica de Pereira
+      <footer className="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div className="space-y-1">
+              <span className="text-white font-extrabold text-base tracking-tight">
+                Librería Central S.A.S.
+              </span>
+              <p className="text-xs text-slate-400">
+                Tu portal de literatura, ciencia y cultura con despacho garantizado a nivel nacional.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-xs">
+              <button onClick={() => handleNavigate('home')} className="hover:text-white transition">Catálogo de Libros</button>
+              <span className="text-slate-700">•</span>
+              <span className="text-slate-400">Términos y Condiciones</span>
+              <span className="text-slate-700">•</span>
+              <span className="text-slate-400">Política de Privacidad</span>
+              <span className="text-slate-700">•</span>
+              <span className="text-slate-400">Envíos y Devoluciones</span>
+            </div>
           </div>
-          <div>
-            Equipo: Jose David Marin • Edwin Osorio • Maicol Londoño
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
+            <div>
+              © 2026 Librería Central S.A.S. Todos los derechos reservados. Pagos seguros con Billetera Virtual y trazabilidad garantizada.
+            </div>
+            <div>
+              Atención al Cliente: contacto@libreriacentral.com • Horario: Lun - Sáb 8:00 a 18:00
+            </div>
           </div>
         </div>
       </footer>

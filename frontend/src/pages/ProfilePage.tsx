@@ -1,9 +1,9 @@
 /**
  * @file ProfilePage.tsx
- * @description User profile management and security view implementing:
- * - HU-06 (RF-028): Secure password update with previous password verification.
- * - HU-07 (RF-021, RF-037): Contact/shipping details update and virtual wallet balance display.
- * - HU-03 (RF-031): Interactive role-based purchase restriction simulator.
+ * @description User profile management and security view:
+ * - Secure password update with previous password verification.
+ * - Contact/shipping details update and virtual wallet balance display.
+ * - Institutional policy review for administrative users.
  */
 
 import React, { useState } from 'react';
@@ -19,12 +19,11 @@ import {
   CheckCircle2,
   AlertCircle,
   Save,
-  ShoppingBag,
   Plus
 } from 'lucide-react';
 
 /**
- * Profile management component for authenticated users (HU-06, HU-07, HU-03, HU-13).
+ * Profile management component for authenticated users.
  */
 export const ProfilePage: React.FC = () => {
   const { user, refreshProfile, role } = useAuth();
@@ -33,27 +32,18 @@ export const ProfilePage: React.FC = () => {
   const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // Top-up virtual wallet state (HU-13 / RF-037)
+  // Top-up virtual wallet state
   const [showTopupModal, setShowTopupModal] = useState(false);
   const [topupMonto, setTopupMonto] = useState(50000);
   const [topupLoading, setTopupLoading] = useState(false);
   const [topupSuccess, setTopupSuccess] = useState<string | null>(null);
 
-  // Password change state (HU-06 / RF-028)
+  // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [pwdMsg, setPwdMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [savingPwd, setSavingPwd] = useState(false);
-
-  // RF-031 purchase restriction simulator state (HU-03)
-  const [testCompraMsg, setTestCompraMsg] = useState<{
-    status: number;
-    title: string;
-    detail: string;
-    isError: boolean;
-  } | null>(null);
-  const [testingCompra, setTestingCompra] = useState(false);
 
   if (!user) {
     return (
@@ -64,7 +54,7 @@ export const ProfilePage: React.FC = () => {
   }
 
   /**
-   * Submits updated contact phone and shipping address to PUT /api/v1/auth/me (HU-07).
+   * Submits updated contact phone and shipping address to PUT /api/v1/auth/me.
    */
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +75,7 @@ export const ProfilePage: React.FC = () => {
   };
 
   /**
-   * Validates current and new password constraints and invokes PUT /api/v1/auth/change-password (HU-06).
+   * Validates current and new password constraints and invokes PUT /api/v1/auth/change-password.
    * Ensures the new password matches confirmation and differs from the current password.
    */
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -127,39 +117,6 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  /**
-   * Calls POST /api/v1/compras/validar-permiso-compra-reserva to demonstrate
-   * role-based purchase restriction enforcement in real time (HU-03 / RF-031).
-   */
-  const handleTestCompraRestriction = async () => {
-    setTestingCompra(true);
-    setTestCompraMsg(null);
-    try {
-      const res = await api.compras.validarPermiso({
-        libro_id: 1,
-        cantidad: 1,
-        modalidad: 'COMPRA',
-      });
-      setTestCompraMsg({
-        status: 200,
-        title: '✅ Operación Permitida (HTTP 200 OK)',
-        detail: `${res.mensaje} — ${res.detalle || ''}`,
-        isError: false,
-      });
-    } catch (err: any) {
-      const status = err.response?.status || 500;
-      const detail = err.response?.data?.detail || 'Error en la petición.';
-      setTestCompraMsg({
-        status,
-        title: `🛑 Bloqueado por Regla RF-031 (HTTP ${status} Forbidden)`,
-        detail,
-        isError: true,
-      });
-    } finally {
-      setTestingCompra(false);
-    }
-  };
-
   return (
     <div className="max-w-5xl mx-auto my-8 px-4 sm:px-6">
       {/* Profile Header */}
@@ -196,7 +153,7 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Virtual Wallet Card (RF-037 / HU-13) */}
+          {/* Virtual Wallet Card */}
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-2xl shadow-md min-w-[260px] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-xs text-slate-300 mb-1.5">
@@ -205,7 +162,7 @@ export const ProfilePage: React.FC = () => {
                   <span>Monedero Virtual</span>
                 </span>
                 <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">
-                  RF-037
+                  Activo
                 </span>
               </div>
               <div className="text-2xl font-black tracking-tight text-emerald-400">
@@ -253,7 +210,7 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-500">
-              Selecciona o ingresa el monto que deseas abonar a tu saldo para adquirir libros (RF-037).
+              Selecciona o ingresa el monto que deseas abonar a tu saldo para adquirir libros de nuestro catálogo.
             </p>
 
             <div className="grid grid-cols-3 gap-2">
@@ -320,12 +277,12 @@ export const ProfilePage: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* HU-07: Update Contact & Shipping Details */}
+        {/* Update Contact & Shipping Details */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
           <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-slate-100">
             <User className="w-5 h-5 text-blue-600" />
             <h2 className="text-base font-bold text-slate-800">
-              Datos de Correspondencia y Envío (RF-021)
+              Datos de Correspondencia y Envío
             </h2>
           </div>
 
@@ -390,12 +347,12 @@ export const ProfilePage: React.FC = () => {
           </form>
         </div>
 
-        {/* HU-06: Secure Password Update */}
+        {/* Secure Password Update */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
           <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-slate-100">
             <Lock className="w-5 h-5 text-blue-600" />
             <h2 className="text-base font-bold text-slate-800">
-              Seguridad: Cambio de Contraseña (RF-028)
+              Seguridad: Cambio de Contraseña
             </h2>
           </div>
 
@@ -473,47 +430,24 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* HU-03: Interactive RF-031 Restriction Demo */}
-      <div className="mt-6 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-md">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Institutional Policy Notice for Internal Staff */}
+      {(role === 'ADMINISTRADOR' || role === 'ROOT') && (
+        <div className="mt-6 bg-slate-900 text-slate-300 rounded-2xl p-6 border border-slate-800 flex items-start space-x-4 shadow-sm">
+          <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 flex-shrink-0">
+            <ShieldAlert className="w-5 h-5" />
+          </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <ShieldAlert className="w-5 h-5 text-amber-400" />
-              <h3 className="text-lg font-bold">
-                Demostración de Regla RF-031 (Restricción de Compra para Administradores)
-              </h3>
-            </div>
-            <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-              De acuerdo con las reglas de negocio del proyecto (HU-03 / RF-031), el sistema prohíbe
-              que cuentas con rol <strong className="text-emerald-400">ADMINISTRADOR</strong> o{' '}
-              <strong className="text-rose-400">ROOT</strong> compren o reserven libros.
-              Haz clic abajo para validar la respuesta del servidor en tiempo real con tu usuario actual:
+            <h3 className="text-sm font-bold text-white mb-1">
+              Política de Transparencia y Control Interno
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Las cuentas con credenciales de administración y control no están habilitadas para realizar
+              compras de inventario o adquisiciones comerciales en el catálogo, en estricto apego a las políticas de
+              auditoría corporativa y separación de funciones.
             </p>
           </div>
-
-          <button
-            onClick={handleTestCompraRestriction}
-            disabled={testingCompra}
-            className="px-5 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg transition flex items-center justify-center space-x-2 flex-shrink-0"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span>{testingCompra ? 'Validando...' : 'Simular Compra'}</span>
-          </button>
         </div>
-
-        {testCompraMsg && (
-          <div
-            className={`mt-4 p-4 rounded-xl text-xs border ${
-              testCompraMsg.isError
-                ? 'bg-rose-950/70 border-rose-500/40 text-rose-200'
-                : 'bg-emerald-950/70 border-emerald-500/40 text-emerald-200'
-            }`}
-          >
-            <div className="font-bold text-sm mb-1">{testCompraMsg.title}</div>
-            <div className="text-xs">{testCompraMsg.detail}</div>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };

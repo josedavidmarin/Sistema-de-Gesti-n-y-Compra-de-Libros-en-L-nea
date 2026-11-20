@@ -115,7 +115,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
         </div>
         <h2 className="text-2xl font-bold text-slate-800">Acceso Exclusivo de Clientes</h2>
         <p className="text-slate-600 max-w-lg mx-auto">
-          El módulo de compras y pedidos está restringido para cuentas operativas (RF-031).
+          El módulo de compras y pedidos está destinado exclusivamente a cuentas de clientes registrados.
         </p>
         <button
           onClick={() => onNavigate('home')}
@@ -138,7 +138,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Mis Compras y Órdenes</h1>
             <p className="text-xs text-slate-500">
-              Historial de pedidos, detalle de códigos físicos únicos (RF-002) y cancelación con reembolso (RF-014).
+              Historial de pedidos, seguimiento de copias físicas y gestión de cancelaciones.
             </p>
           </div>
         </div>
@@ -243,7 +243,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
                   {/* Physical items list */}
                   <div className="space-y-2 pt-2 border-t border-slate-100">
                     <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Ejemplares Físicos Incluidos (RF-002, RF-015):
+                      Copias Físicas Incluidas en la Orden:
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

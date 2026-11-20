@@ -65,7 +65,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     }
 
     if (role !== 'CLIENTE') {
-      alert('Regla de Negocio RF-031: Los administradores y Root tienen prohibido comprar libros.');
+      alert('Las cuentas con rol administrativo no están habilitadas para realizar compras de catálogo.');
       return;
     }
 
@@ -102,7 +102,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <div className="max-w-5xl mx-auto text-center space-y-5">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-100/70 border border-blue-200 text-blue-800 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>Sprint 2 — Catálogo, Stock Granular & Billetera Virtual</span>
+            <span>Catálogo Oficial de Librería Central • Envíos a Nivel Nacional</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
@@ -110,8 +110,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
-            Inventario en tiempo real con control físico único por ejemplar. Sin bloqueos previos en el carrito:
-            el stock se descuenta de forma atómica en el checkout con tu Billetera Virtual.
+            Inventario en tiempo real con despacho garantizado. Agrega tus títulos favoritos al carrito
+            y finaliza tu compra con saldo de tu Billetera Virtual de forma instantánea y segura.
           </p>
 
           {/* Search bar inside Hero */}
@@ -261,7 +261,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       {isAdministrative ? (
                         <span
                           className="text-[10px] text-slate-400 bg-slate-100 px-2 py-1 rounded font-medium"
-                          title="Restricción RF-031: Cuentas de administración no compran"
+                          title="Cuentas administrativas no realizan compras comerciales"
                         >
                           Rol Admin
                         </span>

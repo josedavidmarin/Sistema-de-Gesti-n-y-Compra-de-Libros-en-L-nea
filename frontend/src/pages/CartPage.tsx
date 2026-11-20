@@ -119,10 +119,10 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
         <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto">
           <AlertCircle className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-800">Restricción de Negocio (RF-031)</h2>
+        <h2 className="text-2xl font-bold text-slate-800">Acceso Restringido para Personal Interno</h2>
         <p className="text-slate-600 max-w-lg mx-auto">
-          Tu rol actual es <strong>{role}</strong>. De acuerdo con las políticas del sistema,
-          las cuentas de administración y root tienen prohibido realizar compras o reservas personales.
+          Tu rol actual es <strong>{role}</strong>. De acuerdo con las políticas corporativas,
+          las cuentas con privilegios administrativos no están habilitadas para realizar compras de catálogo.
         </p>
         <button
           onClick={() => onNavigate('home')}
@@ -175,7 +175,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
 
             <div className="pt-3 border-t border-slate-200">
               <div className="text-xs font-bold uppercase text-slate-400 mb-2">
-                Ejemplares Físicos Asignados (RF-002 / FIFO):
+                Copias Físicas Asignadas a su Pedido:
               </div>
               <div className="space-y-1">
                 {successOrder.detalles?.map((item) => (
