@@ -152,8 +152,8 @@ export const AdminPage: React.FC = () => {
             <ShieldCheck className="w-7 h-7 text-rose-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Panel de Control Root — Seguridad y Personal</h1>
-            <p className="text-xs text-rose-200">
+            <h1 className="text-xl sm:text-2xl font-bold leading-tight">Panel de Control Root — Seguridad y Personal</h1>
+            <p className="text-xs text-rose-200 mt-1">
               Gestión Integral de Usuarios, Roles y Seguridad Corporativa
             </p>
           </div>

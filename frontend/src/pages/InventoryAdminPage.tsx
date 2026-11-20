@@ -174,33 +174,33 @@ export const InventoryAdminPage: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
             <Boxes className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Control de Inventario y Ejemplares Físicos</h1>
-            <p className="text-xs text-slate-500">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Control de Inventario y Ejemplares Físicos</h1>
+            <p className="text-xs text-slate-500 mt-0.5">
               Gestión granular por copia única con trazabilidad de código de barras y control de sedes.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3 self-stretch sm:self-auto justify-end">
           <button
             onClick={fetchBooks}
             disabled={loading}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition"
+            className="p-2.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200 sm:border-0 transition"
             title="Refrescar inventario"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center space-x-2"
+            className="flex-1 sm:flex-initial px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center space-x-2"
           >
             <BookPlus className="w-4 h-4" />
             <span>Nuevo Libro</span>
@@ -253,13 +253,13 @@ export const InventoryAdminPage: React.FC = () => {
                 <div
                   key={book.id}
                   onClick={() => setSelectedBook(book)}
-                  className={`bg-white rounded-2xl p-4 border cursor-pointer transition shadow-xs flex items-center justify-between gap-4 ${
+                  className={`bg-white rounded-2xl p-4 border cursor-pointer transition shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 ${
                     isSelected
                       ? 'border-emerald-500 ring-2 ring-emerald-100 bg-emerald-50/10'
                       : 'border-slate-200 hover:border-slate-300 hover:shadow'
                   }`}
                 >
-                  <div className="flex items-center space-x-3.5 flex-1 min-w-0">
+                  <div className="flex items-center space-x-3 sm:space-x-3.5 flex-1 min-w-0 w-full sm:w-auto">
                     {book.portada_url ? (
                       <img
                         src={book.portada_url}
@@ -271,9 +271,9 @@ export const InventoryAdminPage: React.FC = () => {
                         Libro
                       </div>
                     )}
-                    <div className="min-w-0">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-bold text-slate-900 text-sm truncate">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="font-bold text-slate-900 text-sm">
                           {book.titulo}
                         </span>
                         {book.es_novedad && (
@@ -287,8 +287,8 @@ export const InventoryAdminPage: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 truncate">{book.autor}</p>
-                      <div className="flex items-center space-x-3 text-[11px] text-slate-400 font-mono pt-1">
+                      <p className="text-xs text-slate-500 truncate mt-0.5">{book.autor}</p>
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400 font-mono pt-1">
                         <span>ISBN: {book.isbn}</span>
                         <span>•</span>
                         <span className="font-sans font-bold text-slate-700">
@@ -299,7 +299,7 @@ export const InventoryAdminPage: React.FC = () => {
                   </div>
 
                   {/* Stock Counters */}
-                  <div className="text-right flex-shrink-0 space-y-1">
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 flex-shrink-0 gap-1">
                     <span
                       className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${
                         book.stock_disponible > 0

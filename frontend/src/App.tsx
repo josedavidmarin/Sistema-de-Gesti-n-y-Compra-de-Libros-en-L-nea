@@ -30,10 +30,10 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full overflow-x-hidden">
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
-      <main className="flex-1">
+      <main className="flex-1 w-full overflow-x-hidden">
         {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
         {currentPage === 'cart' && <CartPage onNavigate={handleNavigate} />}
         {currentPage === 'orders' && <OrdersPage onNavigate={handleNavigate} />}
@@ -75,7 +75,7 @@ const AppContent: React.FC = () => {
               <span className="text-slate-400">Envíos y Devoluciones</span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[11px] text-slate-400">
             <div>
               © 2026 Librería Central S.A.S. Todos los derechos reservados. Pagos seguros con Billetera Virtual y trazabilidad garantizada.
             </div>

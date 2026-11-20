@@ -122,14 +122,14 @@ export const ProfilePage: React.FC = () => {
       {/* Profile Header */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-2xl shadow">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-xl sm:text-2xl shadow flex-shrink-0">
               {user.nombre.charAt(0)}
               {user.apellido.charAt(0)}
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="text-2xl font-bold text-slate-900">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 truncate">
                   {user.nombre} {user.apellido}
                 </h1>
                 <span
@@ -144,8 +144,8 @@ export const ProfilePage: React.FC = () => {
                   {user.rol}
                 </span>
               </div>
-              <p className="text-sm text-slate-500 mt-0.5">{user.email}</p>
-              <div className="flex items-center space-x-4 text-xs text-slate-400 mt-2">
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 truncate">{user.email}</p>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 mt-2">
                 <span>DNI: <strong className="text-slate-600">{user.dni}</strong></span>
                 <span>•</span>
                 <span>Miembro desde: {new Date(user.fecha_registro).toLocaleDateString()}</span>
@@ -154,7 +154,7 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           {/* Virtual Wallet Card */}
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-2xl shadow-md min-w-[260px] flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-2xl shadow-md w-full sm:w-auto min-w-0 sm:min-w-[260px] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-xs text-slate-300 mb-1.5">
                 <span className="flex items-center space-x-1.5 font-semibold">
