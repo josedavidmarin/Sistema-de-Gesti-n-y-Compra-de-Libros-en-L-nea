@@ -1,8 +1,9 @@
 @echo off
-title Sistema de Gestion y Compra de Libros en Linea - Sprint 1
+title Sistema de Gestion y Compra de Libros en Linea - Entrega Integrada (Notas 3 y 4)
 echo =========================================================================
-echo   SISTEMA DE GESTION Y COMPRA DE LIBROS EN LINEA — SPRINT 1 LOCAL
+echo   SISTEMA DE GESTION Y COMPRA DE LIBROS EN LINEA — ENTREGA INTEGRADA
 echo   Universidad Tecnologica de Pereira - IS873 Laboratorio de Software
+echo   Evaluacion Integrada: Nota 3 (Sprint Review 2) + Nota 4 (Entrega Final)
 echo =========================================================================
 echo.
 echo [1/2] Iniciando Servidor Backend (FastAPI + Uvicorn en http://localhost:8000)...
@@ -20,5 +21,6 @@ echo =========================================================================
 echo   Servicios en linea:
 echo   - Frontend React:  http://localhost:5173
 echo   - Backend Swagger: http://localhost:8000/docs
+echo   - Suite de Pruebas: Ejecute 'python run_tests.py'
 echo =========================================================================
 pause

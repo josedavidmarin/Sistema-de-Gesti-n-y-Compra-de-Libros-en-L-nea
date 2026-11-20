@@ -1,4 +1,4 @@
-from typing import Generator, List
+from typing import Generator, List, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -10,6 +10,11 @@ from app.models.user import User, RoleEnum
 # OAuth2 scheme configured for OpenAPI Swagger UI authorization
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/auth/login-swagger"
+)
+
+oauth2_scheme_optional = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/auth/login-swagger",
+    auto_error=False
 )
 
 def get_db() -> Generator:
@@ -106,3 +111,26 @@ def verify_client_only(current_user: User = Depends(get_current_user)) -> User:
             detail=f"Business Restriction (RF-031): Users with role '{current_user.rol}' are strictly prohibited from purchasing or reserving books."
         )
     return current_user
+
+
+def get_optional_current_user(
+    db: Session = Depends(get_db),
+    token: Optional[str] = Depends(oauth2_scheme_optional)
+) -> Optional[User]:
+    """
+    Attempts to extract and authenticate user if Authorization header is provided.
+    Returns None if no token or invalid token, allowing public access.
+    """
+    if not token:
+        return None
+    try:
+        payload = decode_access_token(token)
+        if not payload:
+            return None
+        email: str = payload.get("sub")
+        if not email:
+            return None
+        return db.query(User).filter(User.email == email, User.is_active == True).first()
+    except Exception:
+        return None
+

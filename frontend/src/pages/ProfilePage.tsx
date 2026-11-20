@@ -19,11 +19,12 @@ import {
   CheckCircle2,
   AlertCircle,
   Save,
-  ShoppingBag
+  ShoppingBag,
+  Plus
 } from 'lucide-react';
 
 /**
- * Profile management component for authenticated users (HU-06, HU-07, HU-03).
+ * Profile management component for authenticated users (HU-06, HU-07, HU-03, HU-13).
  */
 export const ProfilePage: React.FC = () => {
   const { user, refreshProfile, role } = useAuth();
@@ -31,6 +32,12 @@ export const ProfilePage: React.FC = () => {
   const [direccion, setDireccion] = useState(user?.direccion || '');
   const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
+
+  // Top-up virtual wallet state (HU-13 / RF-037)
+  const [showTopupModal, setShowTopupModal] = useState(false);
+  const [topupMonto, setTopupMonto] = useState(50000);
+  const [topupLoading, setTopupLoading] = useState(false);
+  const [topupSuccess, setTopupSuccess] = useState<string | null>(null);
 
   // Password change state (HU-06 / RF-028)
   const [currentPassword, setCurrentPassword] = useState('');
@@ -189,24 +196,128 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Virtual Wallet Card (RF-037) */}
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-4 rounded-xl shadow min-w-[220px]">
-            <div className="flex items-center justify-between text-xs text-slate-300 mb-1">
-              <span className="flex items-center space-x-1">
-                <Wallet className="w-4 h-4 text-emerald-400" />
-                <span>Monedero Virtual</span>
-              </span>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">
-                RF-037
-              </span>
+          {/* Virtual Wallet Card (RF-037 / HU-13) */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-2xl shadow-md min-w-[260px] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between text-xs text-slate-300 mb-1.5">
+                <span className="flex items-center space-x-1.5 font-semibold">
+                  <Wallet className="w-4 h-4 text-emerald-400" />
+                  <span>Monedero Virtual</span>
+                </span>
+                <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">
+                  RF-037
+                </span>
+              </div>
+              <div className="text-2xl font-black tracking-tight text-emerald-400">
+                ${user.saldo_disponible.toLocaleString('es-CO')} COP
+              </div>
+              <div className="text-[11px] text-slate-400 mt-1">Saldo disponible para compras directas</div>
             </div>
-            <div className="text-2xl font-bold tracking-tight text-emerald-400">
-              ${user.saldo_disponible.toLocaleString('es-CO')} COP
-            </div>
-            <div className="text-[11px] text-slate-400 mt-1">Saldo disponible para compras directas</div>
+
+            {role === 'CLIENTE' && (
+              <button
+                onClick={() => setShowTopupModal(true)}
+                className="mt-3 w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center space-x-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Recargar Billetera</span>
+              </button>
+            )}
           </div>
         </div>
+
+        {/* Top-up Success Banner */}
+        {topupSuccess && (
+          <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-xl flex items-center space-x-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>{topupSuccess}</span>
+          </div>
+        )}
       </div>
+
+      {/* Topup Modal */}
+      {showTopupModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-5">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+              <div className="flex items-center space-x-2">
+                <Wallet className="w-5 h-5 text-emerald-600" />
+                <h3 className="font-bold text-slate-900 text-base">Recargar Billetera Virtual</h3>
+              </div>
+              <button
+                onClick={() => setShowTopupModal(false)}
+                className="text-slate-400 hover:text-slate-600 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Selecciona o ingresa el monto que deseas abonar a tu saldo para adquirir libros (RF-037).
+            </p>
+
+            <div className="grid grid-cols-3 gap-2">
+              {[50000, 100000, 200000].map((amt) => (
+                <button
+                  key={amt}
+                  type="button"
+                  onClick={() => setTopupMonto(amt)}
+                  className={`py-2 px-1 text-xs font-bold rounded-xl border transition ${
+                    topupMonto === amt
+                      ? 'bg-emerald-50 border-emerald-500 text-emerald-700'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  ${(amt / 1000).toFixed(0)}k COP
+                </button>
+              ))}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Monto Personalizado (COP)</label>
+              <input
+                type="number"
+                min="1000"
+                step="5000"
+                value={topupMonto}
+                onChange={(e) => setTopupMonto(parseFloat(e.target.value) || 0)}
+                className="w-full text-sm font-bold text-slate-900 px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowTopupModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded-xl font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={topupLoading || topupMonto <= 0}
+                onClick={async () => {
+                  setTopupLoading(true);
+                  try {
+                    const res = await api.compras.topupWallet(topupMonto);
+                    await refreshProfile();
+                    setTopupSuccess(`¡Recarga exitosa! Nuevo saldo disponible: $${res.saldo_disponible.toLocaleString('es-CO')} COP`);
+                    setTimeout(() => setTopupSuccess(null), 4000);
+                    setShowTopupModal(false);
+                  } catch (err: any) {
+                    alert(err.response?.data?.detail || 'Error al recargar saldo.');
+                  } finally {
+                    setTopupLoading(false);
+                  }
+                }}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs rounded-xl font-bold shadow"
+              >
+                {topupLoading ? 'Acreditando...' : 'Confirmar Recarga'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* HU-07: Update Contact & Shipping Details */}

@@ -6,6 +6,9 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminPage } from './pages/AdminPage';
+import { CartPage } from './pages/CartPage';
+import { OrdersPage } from './pages/OrdersPage';
+import { InventoryAdminPage } from './pages/InventoryAdminPage';
 
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('home');
@@ -19,8 +22,10 @@ const AppContent: React.FC = () => {
   const handleAuthSuccess = () => {
     if (role === 'ROOT') {
       setCurrentPage('admin');
+    } else if (role === 'ADMINISTRADOR') {
+      setCurrentPage('inventory');
     } else {
-      setCurrentPage('profile');
+      setCurrentPage('home');
     }
   };
 
@@ -30,6 +35,9 @@ const AppContent: React.FC = () => {
 
       <main className="flex-1">
         {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
+        {currentPage === 'cart' && <CartPage onNavigate={handleNavigate} />}
+        {currentPage === 'orders' && <OrdersPage onNavigate={handleNavigate} />}
+        {currentPage === 'inventory' && <InventoryAdminPage />}
         {currentPage === 'login' && (
           <LoginPage
             onSuccess={handleAuthSuccess}
