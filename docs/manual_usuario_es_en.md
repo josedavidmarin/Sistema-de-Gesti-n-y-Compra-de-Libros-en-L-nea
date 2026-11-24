@@ -33,6 +33,8 @@
 # Parte I: Manual de Usuario en Español
 
 ## 1. Introducción y Propósito del Producto
+<img width="1281" height="887" alt="pagina_inicial" src="https://github.com/user-attachments/assets/c60cabf6-5cca-4c11-a0f3-fb04aa43b696" />
+
 Bienvenido a la **Librería en Línea**, una plataforma web diseñada para facilitar la adquisición y gestión física de libros. Nuestro sistema se destaca por ofrecer:
 * **Trazabilidad física real:** Cada copia física de un libro cuenta con un código único de barras (`LIB-XXX-EJYYY`).
 * **Carrito de compras sin ataduras:** Puedes guardar libros en tu carrito todo el tiempo que desees; el inventario solo se descuenta cuando confirmas tu compra.
