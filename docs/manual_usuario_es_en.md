@@ -33,7 +33,7 @@
 # Parte I: Manual de Usuario en Español
 
 ## 1. Introducción y Propósito del Producto
-<img width="1281" height="887" alt="pagina_inicial" src="https://github.com/user-attachments/assets/c60cabf6-5cca-4c11-a0f3-fb04aa43b696" />
+
 
 Bienvenido a la **Librería en Línea**, una plataforma web diseñada para facilitar la adquisición y gestión física de libros. Nuestro sistema se destaca por ofrecer:
 * **Trazabilidad física real:** Cada copia física de un libro cuenta con un código único de barras (`LIB-XXX-EJYYY`).
@@ -84,29 +84,7 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
 * Activa la casilla *"Con Stock Disponible"* para ocultar títulos agotados.
 
 *(Figura 1: Vista principal del Catálogo de Libros con buscador y filtros en tiempo real).*
-
-```
-+-----------------------------------------------------------------------------------+
-|  [Librería en Línea]   Catálogo    Carrito (2)    Mis Compras    Billetera: $150.000 COP |
-+-----------------------------------------------------------------------------------+
-|                                                                                   |
-|                   Descubre y Adquiere tus Libros Favoritos                         |
-|             [ Buscar por título, autor o ISBN (ej. Clean)...               [🔍] ] |
-|                                                                                   |
-|  Filtros: [Todos] [Ingeniería de Software] [Literatura]  ☑ Solo Disponibles       |
-|                                                                                   |
-|  +--------------------+  +--------------------+  +--------------------+           |
-|  | [Portada Libro 1]  |  | [Portada Libro 2]  |  | [Portada Libro 3]  |           |
-|  | Clean Architecture |  | Cien Años Soledad  |  | The Pragmatic Prog |           |
-|  | Stock: 4 disp.     |  | Stock: 5 disp.     |  | Stock: 3 disp.     |           |
-|  | $65.000 COP        |  | $45.000 COP        |  | $58.000 COP        |           |
-|  | [ Agregar 🛒 ]     |  | [ Agregar 🛒 ]     |  | [ Agregar 🛒 ]     |           |
-|  +--------------------+  +--------------------+  +--------------------+           |
-+-----------------------------------------------------------------------------------+
-```
-
----
-
+<img width="1081" height="687" alt="pagina_inicial" src="https://github.com/user-attachments/assets/c60cabf6-5cca-4c11-a0f3-fb04aa43b696" />
 ### Paso 2: Agregar Libros al Carrito de Compras
 1. En la tarjeta del libro deseado, haz clic en el botón azul **"Agregar"**.
 2. Verás una notificación emergente confirmando que el libro ha sido añadido a tu carrito.
@@ -114,8 +92,8 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
 4. Recuerda: tener libros en el carrito **no descuenta el inventario físico**. Puedes dejarlos allí el tiempo que desees.
 
 *(Figura 2: Selector interactivo del carrito de compras con control de unidades).*
+<img width="772" height="661" alt="agregar" src="https://github.com/user-attachments/assets/e7d88c7e-0e84-451a-bb4b-015f211c578d" />
 
----
 
 ### Paso 3: Revisión del Carrito y Verificación de Billetera
 1. Haz clic en el enlace **"Carrito"** en la barra superior.
