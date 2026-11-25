@@ -170,9 +170,9 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
 
 *(Figura 6: Panel de gestión de inventario y ejemplares físicos para administradores).*
 <p align="center">
-  <img width="342" height="261" alt="paso 7" src="https://github.com/user-attachments/assets/19551058-c998-4c90-8de4-31f27eaf058d"  />
- <img width="342" height="261" alt="paso 7_1" src="https://github.com/user-attachments/assets/90c64ffe-a350-4d4e-a8e4-e066ab549b50" />
- <img width="442" height="361" alt="paso 7_3" src="https://github.com/user-attachments/assets/53db6af9-c8b9-4f2e-9fe2-90c56a3dadca" />
+  <img width="442" height="361" alt="paso 7" src="https://github.com/user-attachments/assets/19551058-c998-4c90-8de4-31f27eaf058d"  />
+ <img width="442" height="361" alt="paso 7_1" src="https://github.com/user-attachments/assets/90c64ffe-a350-4d4e-a8e4-e066ab549b50" /><br>
+ <img width="542" height="461" alt="paso 7_3" src="https://github.com/user-attachments/assets/53db6af9-c8b9-4f2e-9fe2-90c56a3dadca" />
 </p>
 ---
 
@@ -261,6 +261,9 @@ Upon loading the homepage, the real-time catalog presents titles, cover artwork,
 * Toggle *"In Stock Only"* to hide titles with zero available copies.
 
 *(Figure 1: Main Catalog view with live search and category filters).*
+<p align ="center">
+<img width="881" height="487" alt="pagina_inicial" src="https://github.com/user-attachments/assets/c60cabf6-5cca-4c11-a0f3-fb04aa43b696" />
+</p>
 
 ---
 
@@ -271,7 +274,9 @@ Upon loading the homepage, the real-time catalog presents titles, cover artwork,
 4. Note: Adding to cart **does not lock physical inventory**. Titles can remain in your cart as long as you wish.
 
 *(Figure 2: Interactive cart quantity selector with 3-unit business cap).*
-
+<p align="center">
+<img width="772" height="661" alt="agregar" src="https://github.com/user-attachments/assets/e7d88c7e-0e84-451a-bb4b-015f211c578d" />
+</p>
 ---
 
 ### Step 3: Reviewing the Cart and Checking Wallet Balance
@@ -283,6 +288,9 @@ Upon loading the homepage, the real-time catalog presents titles, cover artwork,
    * Delivery address input (pre-filled from your profile).
 
 *(Figure 3: Shopping Cart summary and customer wallet balance check).*
+<p align="center">
+  <img width="772" height="661" alt="resumen_carrito" src="https://github.com/user-attachments/assets/3b9ba7ed-298e-4304-b667-751b7fd1d26a" />
+</p>
 
 ---
 
@@ -293,6 +301,9 @@ Upon loading the homepage, the real-time catalog presents titles, cover artwork,
    * **If another customer purchased the final copy beforehand:** The transaction aborts immediately with HTTP 409 Conflict, **NO funds are deducted**, and an informative notification guides you to adjust your cart.
 
 *(Figure 4: Order confirmation receipt with physical barcode allocations).*
+<p align="center">
+  <img width="542" height="461" alt="pagar2" src="https://github.com/user-attachments/assets/50f2b109-0349-4315-a50e-161b87aa2052" />
+</p>
 
 ---
 
@@ -306,6 +317,11 @@ Upon loading the homepage, the real-time catalog presents titles, cover artwork,
    * Order status updates permanently to `CANCELADA`.
 
 *(Figure 5: Order history with physical barcodes and cancellation trigger).*
+<p align="center">
+  <img width="342" height="261" lt="paso 5" src="https://github.com/user-attachments/assets/4909538c-0cf4-4676-8e10-7f71146434ec" />
+ <img width="342" height="261" alt="paso 5_1" src="https://github.com/user-attachments/assets/2d5c1f34-4f0b-4d82-a3f8-9dacb3ebb9bf" />
+ <img width="442" height="361" alt="paso 5_2" src="https://github.com/user-attachments/assets/9449406d-7b55-45a5-9280-25ec6f214dcd" />
+</p>
 
 ---
 
@@ -314,7 +330,11 @@ Upon loading the homepage, the real-time catalog presents titles, cover artwork,
 2. Under the **Virtual Wallet** card, click the green **"Top-Up Wallet"** button.
 3. Select a preset amount ($50,000, $100,000, $200,000 COP) or type a custom amount.
 4. Click **"Confirm Top-Up"** to update your spending balance immediately.
-
+<p align="center">
+  <img width="342" height="261" alt="paso 6" src="https://github.com/user-attachments/assets/84df83b2-2ce5-45aa-97db-92c8e64e7eb5" />
+ <img width="342" height="261" alt="paso 6_1" src="https://github.com/user-attachments/assets/b3083182-4b6d-44ba-9352-ba2a802fe29a" />
+ <img width="442" height="361" alt="paso 6_2" src="https://github.com/user-attachments/assets/c3044179-00a2-4c9d-abf7-da41a95b2b4c" />
+</p>
 ---
 
 ### Step 7: Physical Inventory Administration (Admins & Root Only)
@@ -326,6 +346,11 @@ Upon loading the homepage, the real-time catalog presents titles, cover artwork,
    * **Decommissioning damaged copies (RF-004):** Discontinue damaged or lost physical copies specifying a justification reason.
 
 *(Figure 6: Administrative inventory management and physical copy tracking).*
+<p align="center">
+  <img width="342" height="261" alt="paso 7" src="https://github.com/user-attachments/assets/19551058-c998-4c90-8de4-31f27eaf058d"  />
+ <img width="342" height="261" alt="paso 7_1" src="https://github.com/user-attachments/assets/90c64ffe-a350-4d4e-a8e4-e066ab549b50" />
+ <img width="442" height="361" alt="paso 7_3" src="https://github.com/user-attachments/assets/53db6af9-c8b9-4f2e-9fe2-90c56a3dadca" />
+</p>
 
 ---
 
