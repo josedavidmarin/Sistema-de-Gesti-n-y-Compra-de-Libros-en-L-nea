@@ -84,7 +84,10 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
 * Activa la casilla *"Con Stock Disponible"* para ocultar títulos agotados.
 
 *(Figura 1: Vista principal del Catálogo de Libros con buscador y filtros en tiempo real).*
-<img width="1081" height="687" alt="pagina_inicial" src="https://github.com/user-attachments/assets/c60cabf6-5cca-4c11-a0f3-fb04aa43b696" />
+<p align ="center">
+<img width="881" height="487" alt="pagina_inicial" src="https://github.com/user-attachments/assets/c60cabf6-5cca-4c11-a0f3-fb04aa43b696" />
+</p>
+
 ### Paso 2: Agregar Libros al Carrito de Compras
 1. En la tarjeta del libro deseado, haz clic en el botón azul **"Agregar"**.
 2. Verás una notificación emergente confirmando que el libro ha sido añadido a tu carrito.
@@ -92,7 +95,9 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
 4. Recuerda: tener libros en el carrito **no descuenta el inventario físico**. Puedes dejarlos allí el tiempo que desees.
 
 *(Figura 2: Selector interactivo del carrito de compras con control de unidades).*
+<p align="center">
 <img width="772" height="661" alt="agregar" src="https://github.com/user-attachments/assets/e7d88c7e-0e84-451a-bb4b-015f211c578d" />
+</p>
 
 
 ### Paso 3: Revisión del Carrito y Verificación de Billetera
@@ -103,7 +108,12 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
    * El saldo actual de tu **Billetera Virtual**. Si tu saldo es suficiente, verás un indicador verde; de lo contrario, una advertencia indicando cuánto dinero te falta.
    * Campo para ingresar o modificar tu **Dirección de Envío**.
 
+
 *(Figura 3: Resumen del Carrito de Compras y balance de fondos del cliente).*
+
+<p align="center">
+  <img width="772" height="661" alt="resumen_carrito" src="https://github.com/user-attachments/assets/3b9ba7ed-298e-4304-b667-751b7fd1d26a" />
+</p>
 
 ---
 
@@ -114,6 +124,9 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
    * **Si otro cliente compró el último ejemplar disponible justo antes:** El sistema cancelará la operación de inmediato, **NO** te cobrará nada y te mostrará el mensaje: *"El ejemplar del libro [Título] se encuentra agotado o con stock insuficiente."*
 
 *(Figura 4: Pantalla de confirmación de orden exitosa con códigos físicos únicos).*
+<p align="center">
+  <img width="542" height="461" alt="pagar2" src="https://github.com/user-attachments/assets/50f2b109-0349-4315-a50e-161b87aa2052" />
+</p>
 
 ---
 
@@ -127,6 +140,11 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
    * La orden queda marcada permanentemente como `CANCELADA`.
 
 *(Figura 5: Vista de Mis Compras con detalle de ejemplar físico y botón de anulación).*
+<p align="center">
+  <img width="342" height="261" lt="paso 5" src="https://github.com/user-attachments/assets/4909538c-0cf4-4676-8e10-7f71146434ec" />
+ <img width="342" height="261" alt="paso 5_1" src="https://github.com/user-attachments/assets/2d5c1f34-4f0b-4d82-a3f8-9dacb3ebb9bf" />
+ <img width="442" height="361" alt="paso 5_2" src="https://github.com/user-attachments/assets/9449406d-7b55-45a5-9280-25ec6f214dcd" />
+</p>
 
 ---
 
@@ -135,9 +153,13 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
 2. En la tarjeta de **Monedero Virtual**, haz clic en el botón verde **"Recargar Billetera"**.
 3. Selecciona un valor rápido ($50.000, $100.000, $200.000 COP) o escribe un monto personalizado.
 4. Presiona **"Confirmar Recarga"** y tu saldo se actualizará al instante para seguir comprando.
+<p align="center">
+  <img width="342" height="261" alt="paso 6" src="https://github.com/user-attachments/assets/84df83b2-2ce5-45aa-97db-92c8e64e7eb5" />
+ <img width="342" height="261" alt="paso 6_1" src="https://github.com/user-attachments/assets/b3083182-4b6d-44ba-9352-ba2a802fe29a" />
+ <img width="442" height="361" alt="paso 6_2" src="https://github.com/user-attachments/assets/c3044179-00a2-4c9d-abf7-da41a95b2b4c" />
+</p>
 
 ---
-
 ### Paso 7: Administración de Inventario Físico (Solo Administradores y Root)
 1. Inicia sesión con credenciales de Administrador o Root.
 2. En la barra superior aparecerá la pestaña **"Inventario Físico"**.
@@ -147,7 +169,11 @@ Al ingresar a la plataforma, verás el catálogo con las portadas de los libros,
    * **Dar de baja un ejemplar físico (RF-004):** Si una copia física se deteriora o extravía, pulsa *"Dar de Baja"* e ingresa el motivo. Si era la última copia disponible, el libro se marcará automáticamente como *"Agotado"*.
 
 *(Figura 6: Panel de gestión de inventario y ejemplares físicos para administradores).*
-
+<p align="center">
+  <img width="342" height="261" alt="paso 7" src="https://github.com/user-attachments/assets/19551058-c998-4c90-8de4-31f27eaf058d"  />
+ <img width="342" height="261" alt="paso 7_1" src="https://github.com/user-attachments/assets/90c64ffe-a350-4d4e-a8e4-e066ab549b50" />
+ <img width="442" height="361" alt="paso 7_3" src="https://github.com/user-attachments/assets/53db6af9-c8b9-4f2e-9fe2-90c56a3dadca" />
+</p>
 ---
 
 ## 6. Mensajes de Error Comunes y Soluciones
