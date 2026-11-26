@@ -44,3 +44,7 @@ dist/
 .env
 backend/venv/
 backend/.env
+
+# Uploaded media (keep folder via .gitkeep)
+backend/static/uploads/libros/*
+!backend/static/uploads/libros/.gitkeep

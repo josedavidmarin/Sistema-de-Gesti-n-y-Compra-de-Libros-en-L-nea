@@ -4,7 +4,7 @@ from app.db.session import engine, SessionLocal
 from app.core.config import settings
 from app.core.security import get_password_hash
 from app.models.user import User, RoleEnum
-from app.models.book import Book, BookCopy, CopyStatusEnum
+from app.models.book import Book, BookCopy, BookImage, CopyStatusEnum
 
 
 SEED_BOOKS = [
@@ -76,7 +76,7 @@ SEED_BOOKS = [
         "isbn": "978-9588870755",
         "titulo": "La Vorágine (Edición Crítica)",
         "autor": "José Eustasio Rivera",
-        "editorial": "Universidad Tecnológica de Pereira",
+        "editorial": "Editorial Minerva / Letras Colombianas",
         "genero": "Literatura Colombiana",
         "idioma": "Español",
         "anio_publicacion": 2024,
@@ -206,8 +206,33 @@ def init_database():
                     )
                     db.add(copy)
 
+                # Add initial cover image to BookImage table
+                if item.get("portada_url"):
+                    main_img = BookImage(
+                        libro_id=book.id,
+                        url=item["portada_url"],
+                        es_portada=True,
+                        orden=0,
+                    )
+                    db.add(main_img)
+
             db.commit()
             print(f"[*] Catálogo semilla inicializado con {len(SEED_BOOKS)} libros y sus ejemplares físicos únicos.")
+
+        # 6. Ensure BookImage records exist for any existing books
+        if db.query(BookImage).count() == 0:
+            existing_books = db.query(Book).all()
+            for b in existing_books:
+                if b.portada_url:
+                    img_cov = BookImage(
+                        libro_id=b.id,
+                        url=b.portada_url,
+                        es_portada=True,
+                        orden=0,
+                    )
+                    db.add(img_cov)
+            db.commit()
+            print(f"[*] Tabla de imágenes de referencia sincronizada con los libros existentes.")
 
     finally:
         db.close()

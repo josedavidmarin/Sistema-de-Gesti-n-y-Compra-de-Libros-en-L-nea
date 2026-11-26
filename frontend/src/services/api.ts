@@ -12,6 +12,19 @@ import type {
 
 // Reads backend API URL dynamically from environment (Vercel) or falls back to local FastAPI
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+export const BACKEND_URL = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
+
+/**
+ * Normalizes an image path: if it is a relative upload (/static/uploads/...)
+ * prepends the backend origin; if it is an external URL, returns as-is.
+ */
+export function getImageUrl(url?: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+    return url;
+  }
+  return `${BACKEND_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+}
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -116,6 +129,7 @@ export const api = {
       precio: number;
       descripcion?: string;
       portada_url?: string;
+      imagenes_urls?: string[];
       cantidad_ejemplares?: number;
       sede?: string;
     }): Promise<Book> => {
@@ -124,6 +138,32 @@ export const api = {
     },
     update: async (id: number, data: Partial<Book>): Promise<Book> => {
       const res = await apiClient.put<Book>(`/libros/${id}`, data);
+      return res.data;
+    },
+    uploadImage: async (file: File): Promise<{ url: string; filename: string; mensaje: string }> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await apiClient.post<{ url: string; filename: string; mensaje: string }>(
+        '/libros/upload-imagen',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return res.data;
+    },
+    addImage: async (libroId: number, url: string, es_portada: boolean = false): Promise<Book> => {
+      const res = await apiClient.post<Book>(`/libros/${libroId}/imagenes`, { url, es_portada });
+      return res.data;
+    },
+    setCoverImage: async (libroId: number, imagenId: number): Promise<Book> => {
+      const res = await apiClient.put<Book>(`/libros/${libroId}/imagenes/${imagenId}/marcar-portada`);
+      return res.data;
+    },
+    deleteImage: async (libroId: number, imagenId: number): Promise<Book> => {
+      const res = await apiClient.delete<Book>(`/libros/${libroId}/imagenes/${imagenId}`);
       return res.data;
     },
     addCopies: async (id: number, cantidad: number, sede: string = 'Sede Principal Pereira'): Promise<Book> => {

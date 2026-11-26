@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../services/api';
+import { api, getImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { Book } from '../types';
 import {
@@ -7,7 +7,12 @@ import {
   ShoppingCart,
   Sparkles,
   BookOpen,
-  Check
+  Check,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Eye
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -32,6 +37,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [onlyAvailable, setOnlyAvailable] = useState<boolean>(false);
   const [addingId, setAddingId] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Gallery Modal state
+  const [activeModalBook, setActiveModalBook] = useState<Book | null>(null);
+  const [activePhotoIdx, setActivePhotoIdx] = useState<number>(0);
 
   const fetchBooks = async () => {
     try {
@@ -58,7 +67,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, selectedCategory, onlyNovelties, onlyAvailable]);
 
-  const handleAddToCart = async (book: Book) => {
+  const handleAddToCart = async (book: Book, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+
     if (!isAuthenticated) {
       onNavigate('login');
       return;
@@ -79,6 +90,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     } finally {
       setAddingId(null);
     }
+  };
+
+  const handleOpenGalleryModal = (book: Book) => {
+    setActiveModalBook(book);
+    setActivePhotoIdx(0);
   };
 
   return (
@@ -110,8 +126,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
-            Inventario en tiempo real con despacho garantizado. Agrega tus títulos favoritos al carrito
-            y finaliza tu compra con saldo de tu Billetera Virtual de forma instantánea y segura.
+            Inventario en tiempo real con fotos de referencia reales y despacho garantizado. Agrega tus títulos
+            favoritos al carrito y finaliza tu compra con saldo de tu Billetera Virtual de forma instantánea.
           </p>
 
           {/* Search bar inside Hero */}
@@ -192,17 +208,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             {books.map((book) => {
               const isAvailable = book.stock_disponible > 0;
               const isAdministrative = role === 'ADMINISTRADOR' || role === 'ROOT';
+              const photoCount = book.imagenes?.length || (book.portada_url ? 1 : 0);
 
               return (
                 <div
                   key={book.id}
-                  className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition overflow-hidden flex flex-col justify-between group"
+                  onClick={() => handleOpenGalleryModal(book)}
+                  className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col justify-between group cursor-pointer"
                 >
                   {/* Book Cover Image & Badges */}
                   <div className="relative aspect-[3/4] bg-slate-100 overflow-hidden">
                     {book.portada_url ? (
                       <img
-                        src={book.portada_url}
+                        src={getImageUrl(book.portada_url)}
                         alt={book.titulo}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                       />
@@ -223,7 +241,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       </span>
                     </div>
 
-                    <div className="absolute top-3 right-3">
+                    <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
                       {isAvailable ? (
                         <span className="bg-emerald-600/90 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs">
                           {book.stock_disponible} disponibles
@@ -233,6 +251,25 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                           Agotado
                         </span>
                       )}
+
+                      {/* Photo count pill */}
+                      {photoCount > 1 && (
+                        <span
+                          className="bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs flex items-center space-x-1"
+                          title="Haz clic para ver todas las fotos de referencia"
+                        >
+                          <Camera className="w-3 h-3 text-emerald-400" />
+                          <span>{photoCount} fotos</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Quick view overlay on hover */}
+                    <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                      <span className="bg-white/95 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center space-x-1.5">
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Ver fotos y detalles</span>
+                      </span>
                     </div>
                   </div>
 
@@ -267,7 +304,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                         </span>
                       ) : (
                         <button
-                          onClick={() => handleAddToCart(book)}
+                          onClick={(e) => handleAddToCart(book, e)}
                           disabled={!isAvailable || addingId === book.id}
                           className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center space-x-1.5"
                         >
@@ -283,6 +320,229 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         )}
       </section>
+
+      {/* Book Details and Photos Gallery Modal */}
+      {activeModalBook && (
+        <div
+          onClick={() => setActiveModalBook(null)}
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col md:flex-row overflow-hidden relative"
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setActiveModalBook(null)}
+              className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Left: Gallery Column */}
+            <div className="md:w-1/2 p-6 bg-slate-50 border-r border-slate-100 flex flex-col justify-between space-y-4">
+              {(() => {
+                const photos =
+                  activeModalBook.imagenes && activeModalBook.imagenes.length > 0
+                    ? activeModalBook.imagenes.map((img) => img.url)
+                    : activeModalBook.portada_url
+                    ? [activeModalBook.portada_url]
+                    : [];
+
+                const currentPhoto = photos[activePhotoIdx] || activeModalBook.portada_url;
+
+                return (
+                  <div className="space-y-4">
+                    {/* Main image viewer with next/prev controls */}
+                    <div className="relative aspect-[3/4] bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                      {currentPhoto ? (
+                        <img
+                          src={getImageUrl(currentPhoto)}
+                          alt={activeModalBook.titulo}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-sm">
+                          Sin Portada Disponible
+                        </div>
+                      )}
+
+                      {/* Navigation arrows if >1 photo */}
+                      {photos.length > 1 && (
+                        <>
+                          <button
+                            onClick={() =>
+                              setActivePhotoIdx((prev) => (prev > 0 ? prev - 1 : photos.length - 1))
+                            }
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-900/60 hover:bg-slate-900 text-white flex items-center justify-center transition shadow"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              setActivePhotoIdx((prev) => (prev < photos.length - 1 ? prev + 1 : 0))
+                            }
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-900/60 hover:bg-slate-900 text-white flex items-center justify-center transition shadow"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-slate-900/70 text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
+                            Foto {activePhotoIdx + 1} de {photos.length}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Thumbnail Strip */}
+                    {photos.length > 1 && (
+                      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                        {photos.map((url, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => setActivePhotoIdx(idx)}
+                            className={`w-14 h-18 rounded-lg overflow-hidden border-2 cursor-pointer transition flex-shrink-0 ${
+                              activePhotoIdx === idx
+                                ? 'border-blue-600 ring-2 ring-blue-200'
+                                : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
+                            }`}
+                          >
+                            <img
+                              src={getImageUrl(url)}
+                              alt="thumb"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Right: Book Details Column */}
+            <div className="md:w-1/2 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200">
+                    {activeModalBook.genero}
+                  </span>
+                  {activeModalBook.es_novedad && (
+                    <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-200">
+                      Novedad
+                    </span>
+                  )}
+                  <span className="text-[11px] font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-lg">
+                    Estado: {activeModalBook.estado_libro}
+                  </span>
+                </div>
+
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
+                    {activeModalBook.titulo}
+                  </h2>
+                  <p className="text-sm text-slate-600 font-medium mt-1">
+                    Por <strong className="text-slate-800">{activeModalBook.autor}</strong>
+                  </p>
+                </div>
+
+                {/* Stock and Price highlight */}
+                <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+                  <div>
+                    <div className="text-[10px] text-slate-400 uppercase font-semibold">Precio de Venta</div>
+                    <div className="text-2xl font-black text-slate-900">
+                      ${activeModalBook.precio.toLocaleString('es-CO')}{' '}
+                      <span className="text-xs font-semibold text-slate-500">COP</span>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`text-xs font-bold px-3 py-1 rounded-full ${
+                      activeModalBook.stock_disponible > 0
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                        : 'bg-rose-100 text-rose-800 border border-rose-200'
+                    }`}
+                  >
+                    {activeModalBook.stock_disponible > 0
+                      ? `${activeModalBook.stock_disponible} disponibles`
+                      : 'Agotado'}
+                  </span>
+                </div>
+
+                {/* Bibliographic details grid */}
+                <div className="grid grid-cols-2 gap-3 text-xs bg-white p-3 rounded-xl border border-slate-100">
+                  <div>
+                    <span className="text-slate-400">Editorial:</span>{' '}
+                    <strong className="text-slate-700">{activeModalBook.editorial}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">ISBN:</span>{' '}
+                    <strong className="text-slate-700 font-mono">{activeModalBook.isbn}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Páginas:</span>{' '}
+                    <strong className="text-slate-700">{activeModalBook.numero_paginas}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Idioma:</span>{' '}
+                    <strong className="text-slate-700">{activeModalBook.idioma}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Año de Edición:</span>{' '}
+                    <strong className="text-slate-700">{activeModalBook.anio_publicacion}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Fotos de Referencia:</span>{' '}
+                    <strong className="text-slate-700">
+                      {activeModalBook.imagenes?.length || (activeModalBook.portada_url ? 1 : 0)}
+                    </strong>
+                  </div>
+                </div>
+
+                {/* Synopsis */}
+                {activeModalBook.descripcion && (
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Sinopsis</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed max-h-36 overflow-y-auto pr-1">
+                      {activeModalBook.descripcion}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveModalBook(null)}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition"
+                >
+                  Cerrar
+                </button>
+
+                {role === 'ADMINISTRADOR' || role === 'ROOT' ? (
+                  <span className="text-xs text-slate-400 bg-slate-100 px-3 py-2 rounded-xl font-medium">
+                    Cuenta Administrativa (Solo Consulta)
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleAddToCart(activeModalBook);
+                    }}
+                    disabled={activeModalBook.stock_disponible <= 0 || addingId === activeModalBook.id}
+                    className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center space-x-2"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    <span>
+                      {addingId === activeModalBook.id ? 'Añadiendo...' : 'Añadir al Carrito'}
+                    </span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

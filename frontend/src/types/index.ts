@@ -29,6 +29,15 @@ export interface GenericMessage {
   detalle?: string;
 }
 
+export interface BookImage {
+  id: number;
+  libro_id: number;
+  url: string;
+  es_portada: boolean;
+  orden: number;
+  fecha_subida: string;
+}
+
 export interface BookCopy {
   id: number;
   codigo_unico: string;
@@ -59,6 +68,7 @@ export interface Book {
   stock_vendido: number;
   stock_total_activo: number;
   ejemplares?: BookCopy[];
+  imagenes?: BookImage[];
 }
 
 export interface CartItemDetail {

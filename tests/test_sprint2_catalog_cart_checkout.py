@@ -338,3 +338,63 @@ def test_admin_agregar_ejemplares():
     )
     assert res_agregar.status_code == 200
     assert res_agregar.json()["stock_disponible"] == stock_antes + 2
+
+
+# --------------------------------------------------------------------------
+# HU-12: Subida y Gestión de Múltiples Fotos de Referencia
+# --------------------------------------------------------------------------
+
+def test_admin_upload_imagen_local():
+    """Administrador sube un archivo de imagen real al servidor."""
+    admin_token = get_admin_token()
+    headers = {"Authorization": f"Bearer {admin_token}"}
+
+    # Simular un archivo de imagen en memoria
+    file_content = b"\xFF\xD8\xFF\xE0\x00\x10JFIF" + b"\x00" * 100  # JPEG header bytes
+    files = {"file": ("portada_test.jpg", file_content, "image/jpeg")}
+
+    res = client.post("/api/v1/libros/upload-imagen", headers=headers, files=files)
+    assert res.status_code == 200
+    data = res.json()
+    assert "url" in data
+    assert data["url"].startswith("/static/uploads/libros/")
+    assert data["filename"].endswith(".jpg")
+
+
+def test_admin_gestion_multiples_imagenes_libro():
+    """Administrador agrega fotos de referencia, cambia portada y elimina foto."""
+    admin_token = get_admin_token()
+    headers = {"Authorization": f"Bearer {admin_token}"}
+
+    # 1. Agregar nueva foto de referencia al libro 1
+    nueva_url = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600"
+    res_add = client.post(
+        "/api/v1/libros/1/imagenes",
+        headers=headers,
+        json={"url": nueva_url, "es_portada": False}
+    )
+    assert res_add.status_code == 200
+    book = res_add.json()
+    assert len(book["imagenes"]) >= 2
+    added_img = [img for img in book["imagenes"] if img["url"] == nueva_url][0]
+    assert added_img["es_portada"] is False
+
+    # 2. Marcar la nueva foto como portada principal
+    res_portada = client.put(
+        f"/api/v1/libros/1/imagenes/{added_img['id']}/marcar-portada",
+        headers=headers
+    )
+    assert res_portada.status_code == 200
+    book_updated = res_portada.json()
+    assert book_updated["portada_url"] == nueva_url
+    updated_img = [img for img in book_updated["imagenes"] if img["id"] == added_img["id"]][0]
+    assert updated_img["es_portada"] is True
+
+    # 3. Eliminar la foto de referencia agregada
+    res_del = client.delete(
+        f"/api/v1/libros/1/imagenes/{added_img['id']}",
+        headers=headers
+    )
+    assert res_del.status_code == 200
+    book_after_del = res_del.json()
+    assert all(img["id"] != added_img["id"] for img in book_after_del["imagenes"])

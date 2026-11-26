@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../services/api';
+import { api, getImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { CartSummary, Order } from '../types';
 import {
@@ -302,7 +302,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
                   <div className="flex items-center space-x-4 flex-1">
                     {item.portada_url ? (
                       <img
-                        src={item.portada_url}
+                        src={getImageUrl(item.portada_url)}
                         alt={item.titulo}
                         className="w-16 h-20 object-cover rounded-lg shadow-sm border border-slate-100 flex-shrink-0"
                       />

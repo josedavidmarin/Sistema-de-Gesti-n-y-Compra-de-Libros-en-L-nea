@@ -1,8 +1,14 @@
+import os
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.init_db import init_database
 from app.api.v1.endpoints import auth, admin, libros, compras
+
+# Ensure local static directory exists for uploaded book reference images
+STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static"))
+os.makedirs(os.path.join(STATIC_DIR, "uploads", "libros"), exist_ok=True)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -39,6 +45,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Static Files (Serves uploaded book covers and reference images)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 @app.on_event("startup")
 def startup_event():

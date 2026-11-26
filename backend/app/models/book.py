@@ -50,6 +50,21 @@ class Book(Base):
     fecha_registro = Column(DateTime, default=datetime.utcnow)
 
     ejemplares = relationship("BookCopy", back_populates="libro", cascade="all, delete-orphan")
+    imagenes = relationship("BookImage", back_populates="libro", cascade="all, delete-orphan", order_by="BookImage.orden")
+
+
+class BookImage(Base):
+    """Reference photos and cover images associated with a book title."""
+    __tablename__ = "imagenes_libro"
+
+    id = Column(Integer, primary_key=True, index=True)
+    libro_id = Column(Integer, ForeignKey("libros.id", ondelete="CASCADE"), nullable=False, index=True)
+    url = Column(String(600), nullable=False)
+    es_portada = Column(Boolean, default=False, nullable=False)
+    orden = Column(Integer, default=0, nullable=False)
+    fecha_subida = Column(DateTime, default=datetime.utcnow)
+
+    libro = relationship("Book", back_populates="imagenes")
 
 
 class BookCopy(Base):

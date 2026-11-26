@@ -12,19 +12,24 @@ Implements requirements:
 - RF-008: Search and filtering catalog by title, author, genre, price, novelty, and availability.
 """
 
+import os
+import shutil
+import uuid
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, File, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from app.api.deps import get_db, get_optional_current_user, require_roles
 from app.models.user import User, RoleEnum
-from app.models.book import Book, BookCopy, CopyStatusEnum
+from app.models.book import Book, BookCopy, BookImage, CopyStatusEnum
 from app.schemas.book import (
     BookCreate,
     BookUpdate,
     BookResponse,
     BookCopyResponse,
+    BookImageResponse,
+    BookImageAddRequest,
     AddCopiesRequest,
     DecommissionCopyRequest,
 )
@@ -52,6 +57,18 @@ def _enrich_book(book: Book, include_copies: bool = False) -> BookResponse:
             for c in book.ejemplares
         ]
 
+    imagenes_list = [
+        BookImageResponse(
+            id=img.id,
+            libro_id=img.libro_id,
+            url=img.url,
+            es_portada=img.es_portada,
+            orden=img.orden,
+            fecha_subida=img.fecha_subida,
+        )
+        for img in (book.imagenes or [])
+    ]
+
     return BookResponse(
         id=book.id,
         isbn=book.isbn,
@@ -73,6 +90,7 @@ def _enrich_book(book: Book, include_copies: bool = False) -> BookResponse:
         stock_vendido=len(vendidos),
         stock_total_activo=len(activos),
         ejemplares=copias_list,
+        imagenes=imagenes_list,
     )
 
 
@@ -157,6 +175,10 @@ def crear_libro(
             detail=f"Ya existe un libro registrado con el ISBN {payload.isbn}."
         )
 
+    main_cover = payload.portada_url.strip() if payload.portada_url else None
+    if not main_cover and payload.imagenes_urls and len(payload.imagenes_urls) > 0:
+        main_cover = payload.imagenes_urls[0].strip()
+
     book = Book(
         isbn=payload.isbn.strip(),
         titulo=payload.titulo.strip(),
@@ -169,12 +191,41 @@ def crear_libro(
         estado_libro=payload.estado_libro.strip(),
         precio=payload.precio,
         descripcion=payload.descripcion.strip() if payload.descripcion else None,
-        portada_url=payload.portada_url.strip() if payload.portada_url else None,
+        portada_url=main_cover,
         es_novedad=True,  # RF-007
         historico_agotado=False,
     )
     db.add(book)
     db.flush()
+
+    # Register initial images in imagenes_libro
+    added_urls = set()
+    img_order = 0
+    if main_cover:
+        img_portada = BookImage(
+            libro_id=book.id,
+            url=main_cover,
+            es_portada=True,
+            orden=img_order,
+        )
+        db.add(img_portada)
+        added_urls.add(main_cover)
+        img_order += 1
+
+    if payload.imagenes_urls:
+        for extra_url in payload.imagenes_urls:
+            cleaned = extra_url.strip()
+            if cleaned and cleaned not in added_urls:
+                is_first_cover = (main_cover is None and img_order == 0)
+                img_extra = BookImage(
+                    libro_id=book.id,
+                    url=cleaned,
+                    es_portada=is_first_cover,
+                    orden=img_order,
+                )
+                db.add(img_extra)
+                added_urls.add(cleaned)
+                img_order += 1
 
     # Generate initial physical copies (RF-002)
     for idx in range(1, payload.cantidad_ejemplares + 1):
@@ -287,3 +338,155 @@ def dar_de_baja_ejemplar(
     db.commit()
     db.refresh(copy)
     return copy
+
+
+# --------------------------------------------------------------------------
+# Endpoints de Gestión de Imágenes y Fotos de Referencia
+# --------------------------------------------------------------------------
+
+@router.post("/upload-imagen", summary="Upload an image file for book cover or reference photo")
+def subir_imagen_libro(
+    file: UploadFile = File(...),
+    admin_user: User = Depends(require_roles([RoleEnum.ROOT.value, RoleEnum.ADMINISTRADOR.value])),
+):
+    """
+    Uploads an image file (.jpg, .jpeg, .png, .webp, .gif) to the local server
+    and returns its accessible static URL.
+    Requires ROOT or ADMINISTRADOR role.
+    """
+    allowed_extensions = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    filename_orig = file.filename or "upload.jpg"
+    ext = os.path.splitext(filename_orig)[1].lower()
+    if ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Formato no permitido ({ext}). Extensiones válidas: {', '.join(allowed_extensions)}"
+        )
+
+    static_dir = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "static", "uploads", "libros")
+    )
+    os.makedirs(static_dir, exist_ok=True)
+
+    unique_name = f"{uuid.uuid4().hex}{ext}"
+    target_path = os.path.join(static_dir, unique_name)
+
+    with open(target_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    relative_url = f"/static/uploads/libros/{unique_name}"
+    return {
+        "url": relative_url,
+        "filename": unique_name,
+        "mensaje": "Imagen subida exitosamente al servidor."
+    }
+
+
+@router.post("/{libro_id}/imagenes", response_model=BookResponse, summary="Add reference photo to book")
+def agregar_imagen_libro(
+    libro_id: int,
+    payload: BookImageAddRequest,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(require_roles([RoleEnum.ROOT.value, RoleEnum.ADMINISTRADOR.value])),
+):
+    """
+    Adds a new reference photo or cover URL to an existing book title.
+    Requires ROOT or ADMINISTRADOR role.
+    """
+    book = db.query(Book).filter(Book.id == libro_id).first()
+    if not book:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro no encontrado.")
+
+    url = payload.url.strip()
+    if not url:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La URL de imagen no puede estar vacía.")
+
+    is_portada = payload.es_portada
+    if is_portada:
+        for img in book.imagenes:
+            img.es_portada = False
+        book.portada_url = url
+    elif not book.imagenes:
+        is_portada = True
+        book.portada_url = url
+
+    next_order = len(book.imagenes)
+    new_img = BookImage(
+        libro_id=book.id,
+        url=url,
+        es_portada=is_portada,
+        orden=next_order,
+    )
+    db.add(new_img)
+    db.commit()
+    db.refresh(book)
+    return _enrich_book(book, include_copies=True)
+
+
+@router.put("/{libro_id}/imagenes/{imagen_id}/marcar-portada", response_model=BookResponse, summary="Set image as primary cover")
+def marcar_portada(
+    libro_id: int,
+    imagen_id: int,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(require_roles([RoleEnum.ROOT.value, RoleEnum.ADMINISTRADOR.value])),
+):
+    """
+    Sets the specified reference image as the primary book cover.
+    Requires ROOT or ADMINISTRADOR role.
+    """
+    book = db.query(Book).filter(Book.id == libro_id).first()
+    if not book:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro no encontrado.")
+
+    target_img = None
+    for img in book.imagenes:
+        if img.id == imagen_id:
+            img.es_portada = True
+            target_img = img
+        else:
+            img.es_portada = False
+
+    if not target_img:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Imagen no encontrada en este libro.")
+
+    book.portada_url = target_img.url
+    db.commit()
+    db.refresh(book)
+    return _enrich_book(book, include_copies=True)
+
+
+@router.delete("/{libro_id}/imagenes/{imagen_id}", response_model=BookResponse, summary="Delete a reference image")
+def eliminar_imagen_libro(
+    libro_id: int,
+    imagen_id: int,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(require_roles([RoleEnum.ROOT.value, RoleEnum.ADMINISTRADOR.value])),
+):
+    """
+    Removes a reference image from a book title.
+    If the deleted image was the primary cover, the next remaining image is promoted to cover.
+    Requires ROOT or ADMINISTRADOR role.
+    """
+    book = db.query(Book).filter(Book.id == libro_id).first()
+    if not book:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Libro no encontrado.")
+
+    target_img = db.query(BookImage).filter(BookImage.id == imagen_id, BookImage.libro_id == libro_id).first()
+    if not target_img:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Imagen no encontrada en este libro.")
+
+    was_portada = target_img.es_portada
+    db.delete(target_img)
+    db.flush()
+
+    remaining = [img for img in book.imagenes if img.id != imagen_id]
+    if was_portada:
+        if remaining:
+            remaining[0].es_portada = True
+            book.portada_url = remaining[0].url
+        else:
+            book.portada_url = None
+
+    db.commit()
+    db.refresh(book)
+    return _enrich_book(book, include_copies=True)

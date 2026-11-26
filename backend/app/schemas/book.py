@@ -20,6 +20,25 @@ class BookCopyResponse(BaseModel):
         orm_mode = True
 
 
+class BookImageResponse(BaseModel):
+    """Schema representing an uploaded or linked book reference photo."""
+    id: int = Field(..., description="Image unique ID")
+    libro_id: int = Field(..., description="Book ID")
+    url: str = Field(..., description="Public image URL or relative static path")
+    es_portada: bool = Field(False, description="Whether this is the primary cover photo")
+    orden: int = Field(0, description="Display order index")
+    fecha_subida: datetime = Field(..., description="Upload timestamp")
+
+    class Config:
+        orm_mode = True
+
+
+class BookImageAddRequest(BaseModel):
+    """Input payload to register a reference photo for a book."""
+    url: str = Field(..., min_length=1, max_length=600, description="Public URL or uploaded file path")
+    es_portada: bool = Field(False, description="Set as the primary cover image")
+
+
 class BookCreate(BaseModel):
     """Input schema for registering a new book and its initial N physical copies (RF-001, RF-002)."""
     isbn: str = Field(..., min_length=5, max_length=40, example="978-0134494166", description="Unique ISBN or ISSN code")
@@ -33,7 +52,8 @@ class BookCreate(BaseModel):
     estado_libro: str = Field("NUEVO", example="NUEVO", description="Book condition: NUEVO or USADO")
     precio: float = Field(..., gt=0, example=65000.0, description="Sale price in COP")
     descripcion: Optional[str] = Field(None, max_length=1000, description="Book synopsis")
-    portada_url: Optional[str] = Field(None, max_length=500, description="Cover image URL")
+    portada_url: Optional[str] = Field(None, max_length=500, description="Cover image URL or uploaded path")
+    imagenes_urls: Optional[List[str]] = Field(None, description="Optional additional reference image URLs or uploaded paths")
     cantidad_ejemplares: int = Field(3, ge=1, le=50, description="Initial number of physical copies to generate automatically")
     sede: str = Field("Sede Principal Pereira", max_length=100, description="Initial warehouse/branch")
 
@@ -87,6 +107,7 @@ class BookResponse(BaseModel):
     stock_vendido: int = Field(0, description="Count of copies in VENDIDO state")
     stock_total_activo: int = Field(0, description="Total active copies (excluding DADO_DE_BAJA)")
     ejemplares: Optional[List[BookCopyResponse]] = None
+    imagenes: List[BookImageResponse] = []
 
     class Config:
         orm_mode = True
