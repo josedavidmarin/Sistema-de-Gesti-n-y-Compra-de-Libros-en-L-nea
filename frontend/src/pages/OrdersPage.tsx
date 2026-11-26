@@ -4,14 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import type { Order } from '../types';
 import {
   Package,
-  Calendar,
-  MapPin,
-  Barcode,
-  XCircle,
   AlertCircle,
   CheckCircle,
   RefreshCw,
-  Clock
 } from 'lucide-react';
 
 interface OrdersPageProps {
@@ -23,7 +18,10 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [cancelingId, setCancelingId] = useState<number | null>(null);
-  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const fetchOrders = async () => {
     try {
@@ -45,7 +43,11 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
   }, []);
 
   const handleCancelOrder = async (orderId: number) => {
-    if (!window.confirm('¿Seguro que deseas cancelar esta orden? El dinero será devuelto a tu Billetera Virtual y los ejemplares físicos volverán al inventario.')) {
+    if (
+      !window.confirm(
+        '¿Seguro que deseas cancelar esta orden? El dinero será devuelto a tu Billetera Virtual y los ejemplares físicos volverán al inventario.'
+      )
+    ) {
       return;
     }
 
@@ -56,7 +58,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
       setOrders((prev) => prev.map((o) => (o.id === orderId ? canceledOrder : o)));
       setNotification({
         type: 'success',
-        message: `Orden #${orderId} cancelada exitosamente. Se han reembolsado $${canceledOrder.total.toLocaleString('es-CO')} COP a tu Billetera Virtual.`,
+        message: `Orden #${orderId} cancelada. Se reembolsaron $${canceledOrder.total.toLocaleString('es-CO')} COP a tu Billetera Virtual.`,
       });
     } catch (err: any) {
       setNotification({
@@ -68,104 +70,72 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
     }
   };
 
-  const getStatusBadge = (estado: string) => {
+  const getStatusText = (estado: string) => {
     switch (estado) {
       case 'EN_PREPARACION':
-        return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
-            <Clock className="w-3 h-3" />
-            <span>En Preparación</span>
-          </span>
-        );
+        return <span className="text-sm font-medium text-[#111111]">En Preparación</span>;
       case 'ENVIADO':
-        return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">
-            <Package className="w-3 h-3" />
-            <span>Enviado</span>
-          </span>
-        );
+        return <span className="text-sm font-medium text-[#1151ff]">Enviado</span>;
       case 'ENTREGADO':
-        return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-            <CheckCircle className="w-3 h-3" />
-            <span>Entregado</span>
-          </span>
-        );
+        return <span className="text-sm font-medium text-[#007d48]">Entregado</span>;
       case 'CANCELADA':
-        return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
-            <XCircle className="w-3 h-3" />
-            <span>Cancelada (Reembolsada)</span>
-          </span>
-        );
+        return <span className="text-sm font-medium text-[#d30005]">Cancelada (Reembolsada)</span>;
       default:
-        return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
-            {estado}
-          </span>
-        );
+        return <span className="text-sm font-medium text-[#707072]">{estado}</span>;
     }
   };
 
   if (role !== 'CLIENTE') {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
-        <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto">
-          <AlertCircle className="w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-slate-800">Acceso Exclusivo de Clientes</h2>
-        <p className="text-slate-600 max-w-lg mx-auto">
-          El módulo de compras y pedidos está destinado exclusivamente a cuentas de clientes registrados.
+      <div className="max-w-2xl mx-auto px-6 py-20 text-center space-y-5">
+        <h2 className="text-2xl font-medium text-[#111111]">Acceso Exclusivo de Clientes</h2>
+        <p className="text-sm text-[#707072]">
+          El historial de compras y pedidos está destinado únicamente a clientes registrados.
         </p>
-        <button
-          onClick={() => onNavigate('home')}
-          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition"
-        >
-          Volver al Inicio
+        <button onClick={() => onNavigate('home')} className="nike-btn-primary">
+          Volver al Catálogo
         </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 py-10 space-y-10">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-            <Package className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Mis Compras y Órdenes</h1>
-            <p className="text-xs text-slate-500">
-              Historial de pedidos, seguimiento de copias físicas y gestión de cancelaciones.
-            </p>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-[#cacacb]">
+        <div>
+          <h1 className="text-2xl sm:text-[32px] font-medium text-[#111111] leading-[1.2]">
+            Mis Compras
+          </h1>
+          <p className="text-sm text-[#707072] mt-1">
+            Seguimiento de pedidos, códigos de ejemplares físicos y reembolsos.
+          </p>
         </div>
 
         <button
           onClick={fetchOrders}
           disabled={loading}
-          className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition self-end sm:self-auto"
-          title="Refrescar órdenes"
+          className="nike-btn-icon self-start sm:self-auto"
+          title="Actualizar órdenes"
+          aria-label="Actualizar órdenes"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
-      {/* Notification Banner */}
+      {/* Notification */}
       {notification && (
         <div
-          className={`p-4 rounded-xl text-sm flex items-start space-x-3 border ${
+          className={`p-4 border text-sm flex items-start space-x-2.5 ${
             notification.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border-rose-200'
+              ? 'border-[#007d48] text-[#007d48]'
+              : 'border-[#d30005] text-[#d30005]'
           }`}
         >
           {notification.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           )}
           <div className="flex-1 font-medium">{notification.message}</div>
         </div>
@@ -173,123 +143,89 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
 
       {loading && orders.length === 0 ? (
         <div className="py-20 text-center space-y-3">
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-slate-500">Cargando tus compras...</p>
+          <div className="w-8 h-8 border-2 border-[#111111] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-[#707072]">Cargando tus pedidos...</p>
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 border border-slate-200 text-center space-y-4 shadow-sm max-w-lg mx-auto">
-          <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
-            <Package className="w-8 h-8" />
+        <div className="py-16 text-center space-y-5 bg-[#f5f5f5] max-w-lg mx-auto p-10">
+          <Package className="w-10 h-10 text-[#707072] mx-auto" />
+          <div className="space-y-1">
+            <h3 className="text-lg font-medium text-[#111111]">Aún no tienes compras</h3>
+            <p className="text-sm text-[#707072]">
+              Los títulos que adquieras aparecerán aquí con el código único de cada copia física.
+            </p>
           </div>
-          <h3 className="text-lg font-bold text-slate-800">Aún no tienes compras realizadas</h3>
-          <p className="text-sm text-slate-500">
-            Los libros que compres con tu Billetera Virtual aparecerán listados aquí con sus ejemplares físicos únicos.
-          </p>
-          <button
-            onClick={() => onNavigate('home')}
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow transition"
-          >
-            Ir a Comprar Libros
+          <button onClick={() => onNavigate('home')} className="nike-btn-primary">
+            Explorar Catálogo
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="divide-y divide-[#cacacb] border-b border-[#cacacb]">
           {orders.map((order) => {
             const isCancelable = order.estado === 'EN_PREPARACION';
             return (
-              <div
-                key={order.id}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
-              >
-                {/* Order Top Bar */}
-                <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center space-x-4">
-                    <span className="font-extrabold text-slate-900 text-lg">
-                      Orden #{order.id}
-                    </span>
-                    {getStatusBadge(order.estado)}
-                  </div>
-
-                  <div className="flex items-center space-x-6 text-xs text-slate-500">
-                    <div className="flex items-center space-x-1.5">
-                      <Calendar className="w-4 h-4 text-slate-400" />
-                      <span>{new Date(order.fecha_compra).toLocaleString('es-CO')}</span>
-                    </div>
-
-                    <div className="font-extrabold text-slate-900 text-base">
-                      ${order.total.toLocaleString('es-CO')} COP
-                    </div>
-                  </div>
-                </div>
-
-                {/* Order Body */}
-                <div className="p-6 space-y-4">
-                  {/* Shipping address & cancellation date */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-600 gap-2">
-                    <div className="flex items-center space-x-1.5">
-                      <MapPin className="w-4 h-4 text-slate-400" />
-                      <span>
-                        Envío a: <strong>{order.direccion_envio}</strong>
+              <div key={order.id} className="py-8 first:pt-0 space-y-5">
+                {/* Order Summary Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-xl font-medium text-[#111111]">
+                        Orden #{order.id}
                       </span>
+                      <span className="text-[#cacacb]">·</span>
+                      {getStatusText(order.estado)}
                     </div>
-
+                    <p className="text-xs text-[#707072]">
+                      {new Date(order.fecha_compra).toLocaleString('es-CO')} · Envío a:{' '}
+                      <span className="text-[#111111]">{order.direccion_envio}</span>
+                    </p>
                     {order.fecha_cancelacion && (
-                      <div className="text-rose-600 font-medium">
-                        Cancelada el: {new Date(order.fecha_cancelacion).toLocaleString('es-CO')}
-                      </div>
+                      <p className="text-xs text-[#d30005]">
+                        Cancelada el {new Date(order.fecha_cancelacion).toLocaleString('es-CO')}
+                      </p>
                     )}
                   </div>
 
-                  {/* Physical items list */}
-                  <div className="space-y-2 pt-2 border-t border-slate-100">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Copias Físicas Incluidas en la Orden:
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {order.detalles?.map((det) => (
-                        <div
-                          key={det.id}
-                          className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs"
-                        >
-                          <div>
-                            <div className="font-bold text-slate-900">{det.titulo_libro}</div>
-                            <div className="text-slate-500">
-                              Precio: ${det.precio_unitario.toLocaleString('es-CO')} COP
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-1 bg-white px-2 py-1 rounded-md border border-slate-200 text-blue-700 font-mono font-bold">
-                            <Barcode className="w-3.5 h-3.5 text-slate-400" />
-                            <span>{det.codigo_ejemplar}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="text-lg font-medium text-[#111111]">
+                    ${order.total.toLocaleString('es-CO')} COP
                   </div>
-
-                  {/* Cancel Button */}
-                  {isCancelable && (
-                    <div className="pt-3 border-t border-slate-100 flex justify-end">
-                      <button
-                        onClick={() => handleCancelOrder(order.id)}
-                        disabled={cancelingId === order.id}
-                        className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition flex items-center space-x-1.5"
-                      >
-                        {cancelingId === order.id ? (
-                          <>
-                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                            <span>Cancelando y Reembolsando...</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="w-3.5 h-3.5" />
-                            <span>Cancelar Orden y Reembolsar Saldo</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
                 </div>
+
+                {/* Physical Copies List */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {order.detalles?.map((det) => (
+                    <div
+                      key={det.id}
+                      className="p-4 bg-[#f5f5f5] flex items-center justify-between gap-3 text-sm"
+                    >
+                      <div className="min-w-0">
+                        <div className="font-medium text-[#111111] truncate">
+                          {det.titulo_libro}
+                        </div>
+                        <div className="text-xs text-[#707072]">
+                          ${det.precio_unitario.toLocaleString('es-CO')} COP
+                        </div>
+                      </div>
+                      <span className="font-mono text-xs text-[#111111] bg-white px-2.5 py-1 border border-[#cacacb] flex-shrink-0">
+                        {det.codigo_ejemplar}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {isCancelable && (
+                  <div className="flex justify-end pt-1">
+                    <button
+                      onClick={() => handleCancelOrder(order.id)}
+                      disabled={cancelingId === order.id}
+                      className="nike-btn-secondary-sm text-[#d30005] hover:bg-[#f5f5f5] border border-[#d30005]"
+                    >
+                      {cancelingId === order.id
+                        ? 'Cancelando y reembolsando...'
+                        : 'Cancelar Orden y Reembolsar'}
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}

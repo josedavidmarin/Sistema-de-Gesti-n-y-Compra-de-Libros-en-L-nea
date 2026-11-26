@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, Lock, Mail, AlertCircle, Sparkles } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 interface LoginPageProps {
   onSuccess: () => void;
@@ -25,9 +25,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onGoToRegister 
       console.error('Error en autenticación:', err);
       const serverDetail = err.response?.data?.detail;
       const networkMsg = err.message ? `(${err.message})` : '';
-      setError(
-        serverDetail || `Error al iniciar sesión. ${networkMsg}`
-      );
+      setError(serverDetail || `Error al iniciar sesión. ${networkMsg}`);
     } finally {
       setLoading(false);
     }
@@ -40,130 +38,118 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onGoToRegister 
   };
 
   return (
-    <div className="max-w-md mx-auto my-12 px-4">
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-8">
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-inner">
-            <LogIn className="w-6 h-6" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900">Iniciar Sesión</h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Autenticación segura JWT para clientes y administración
+    <div className="max-w-md mx-auto my-12 sm:my-16 px-6">
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-widest text-[#707072]">
+            Librería Central
+          </p>
+          <h1 className="text-[32px] font-medium text-[#111111] leading-[1.15]">
+            Inicia sesión en tu cuenta
+          </h1>
+          <p className="text-sm text-[#707072]">
+            Ingresa tus credenciales para comprar, revisar tus pedidos o gestionar el inventario.
           </p>
         </div>
 
         {error && (
-          <div className="mb-5 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start space-x-2">
+          <div className="p-4 border border-[#d30005] bg-white text-[#d30005] text-sm flex items-start space-x-2.5">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-[#111111]">
               Correo Electrónico
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <Mail className="w-5 h-5" />
-              </div>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ejemplo@libreria.com"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-              />
-            </div>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ejemplo@libreria.com"
+              className="nike-input"
+            />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-[#111111]">
               Contraseña
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <Lock className="w-5 h-5" />
-              </div>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-              />
-            </div>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••••••"
+              className="nike-input"
+            />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition disabled:opacity-50 flex items-center justify-center space-x-2 mt-2"
+            className="nike-btn-primary w-full mt-2"
           >
-            {loading ? (
-              <span>Validando credenciales...</span>
-            ) : (
-              <>
-                <span>Entrar a la Plataforma</span>
-                <LogIn className="w-4 h-4" />
-              </>
-            )}
+            {loading ? 'Validando credenciales...' : 'Iniciar Sesión'}
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-          <p className="text-sm text-slate-600">
-            ¿No tienes una cuenta aún?{' '}
+        <div className="pt-6 border-t border-[#cacacb] text-center">
+          <p className="text-sm text-[#707072]">
+            ¿Aún no eres miembro?{' '}
             <button
               onClick={onGoToRegister}
-              className="text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+              className="text-[#111111] font-medium underline underline-offset-4 hover:text-[#707072] transition-colors"
             >
-              Registrarse como Cliente
+              Únete ahora
             </button>
           </p>
         </div>
 
-        {/* Cuentas de prueba para el Demo Day */}
-        <div className="mt-6 pt-6 border-t border-dashed border-slate-200">
-          <div className="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>Acceso Rápido para Sustentación / Demo Day</span>
-          </div>
-          <div className="grid grid-cols-1 gap-2 text-xs">
+        {/* Quick Demo Access */}
+        <div className="pt-6 border-t border-[#e5e5e5] space-y-3">
+          <p className="text-xs font-medium uppercase tracking-widest text-[#707072]">
+            Cuentas de Acceso Rápido
+          </p>
+          <div className="space-y-2 text-xs">
             <button
               type="button"
               onClick={() => fillQuickCredentials('root@libreria.com', 'RootSecure2026!')}
-              className="p-2.5 rounded-lg border border-rose-200 bg-rose-50 text-rose-800 text-left hover:bg-rose-100 transition flex items-center justify-between"
+              className="w-full p-3.5 bg-[#f5f5f5] hover:bg-[#e5e5e5] text-[#111111] text-left transition-colors flex items-center justify-between"
             >
               <div>
-                <span className="font-bold">🔑 Superadmin ROOT:</span> root@libreria.com
+                <span className="font-medium">Superadmin ROOT</span>
+                <span className="text-[#707072] ml-2">root@libreria.com</span>
               </div>
-              <span className="text-[10px] bg-rose-200 px-1.5 py-0.5 rounded font-mono">Autorellenar</span>
+              <span className="underline underline-offset-2 text-[#111111] font-medium">Usar</span>
             </button>
 
             <button
               type="button"
               onClick={() => fillQuickCredentials('admin.bodega@libreria.com', 'Admin2026!')}
-              className="p-2.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 text-left hover:bg-emerald-100 transition flex items-center justify-between"
+              className="w-full p-3.5 bg-[#f5f5f5] hover:bg-[#e5e5e5] text-[#111111] text-left transition-colors flex items-center justify-between"
             >
               <div>
-                <span className="font-bold">🛠️ Administrador:</span> admin.bodega@libreria.com
+                <span className="font-medium">Administrador</span>
+                <span className="text-[#707072] ml-2">admin.bodega@libreria.com</span>
               </div>
-              <span className="text-[10px] bg-emerald-200 px-1.5 py-0.5 rounded font-mono">Autorellenar</span>
+              <span className="underline underline-offset-2 text-[#111111] font-medium">Usar</span>
             </button>
 
             <button
               type="button"
               onClick={() => fillQuickCredentials('cliente.demo@gmail.com', 'Cliente2026!')}
-              className="p-2.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-left hover:bg-blue-100 transition flex items-center justify-between"
+              className="w-full p-3.5 bg-[#f5f5f5] hover:bg-[#e5e5e5] text-[#111111] text-left transition-colors flex items-center justify-between"
             >
               <div>
-                <span className="font-bold">👤 Cliente Demo:</span> cliente.demo@gmail.com
+                <span className="font-medium">Cliente Demo</span>
+                <span className="text-[#707072] ml-2">cliente.demo@gmail.com</span>
               </div>
-              <span className="text-[10px] bg-blue-200 px-1.5 py-0.5 rounded font-mono">Autorellenar</span>
+              <span className="underline underline-offset-2 text-[#111111] font-medium">Usar</span>
             </button>
           </div>
         </div>

@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
-  BookOpen,
+  ShoppingBag,
   User,
-  ShieldCheck,
-  LogOut,
-  LogIn,
-  UserPlus,
-  ShoppingCart,
-  Package,
-  Boxes,
-  Wallet,
   Menu,
-  X
+  X,
+  Wallet,
+  LogOut,
+  ChevronRight,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -24,32 +19,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const { user, isAuthenticated, role, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const getRoleBadge = () => {
+  const getRoleLabel = () => {
     switch (role) {
       case 'ROOT':
-        return {
-          label: 'Root (Superadmin)',
-          classes: 'bg-rose-100 text-rose-800 border-rose-300',
-        };
+        return 'Superadmin Root';
       case 'ADMINISTRADOR':
-        return {
-          label: 'Administrador',
-          classes: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-        };
+        return 'Administrador';
       case 'CLIENTE':
-        return {
-          label: 'Cliente',
-          classes: 'bg-blue-100 text-blue-800 border-blue-300',
-        };
+        return 'Miembro';
       default:
-        return {
-          label: 'Visitante',
-          classes: 'bg-purple-100 text-purple-800 border-purple-300',
-        };
+        return 'Visitante';
     }
   };
-
-  const badge = getRoleBadge();
 
   const handleNavClick = (page: string) => {
     onNavigate(page);
@@ -63,344 +44,344 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   };
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand */}
-        <div
-          className="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer group flex-shrink-0"
-          onClick={() => handleNavClick('home')}
-        >
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow group-hover:bg-blue-700 transition flex-shrink-0">
-            <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
+    <header className="sticky top-0 z-50 w-full bg-white">
+      {/* Utility Bar (36px, Soft Cloud #f5f5f5) */}
+      <div className="bg-[#f5f5f5] text-[#111111] h-9 hidden md:block">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 h-full flex items-center justify-between text-xs font-medium">
+          <div className="flex items-center space-x-3 text-[#707072]">
+            <span>Librería Central</span>
+            <span className="text-[#cacacb]">|</span>
+            <span>Envíos garantizados a toda Colombia</span>
           </div>
-          <div>
-            <span className="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight whitespace-nowrap">
-              Librería Central
-            </span>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium hidden sm:block">
-              Lectura, Cultura & Saber
-            </p>
+
+          <div className="flex items-center space-x-3">
+            {isAuthenticated && user ? (
+              <>
+                <span className="text-[#707072]">{getRoleLabel()}</span>
+                {role === 'CLIENTE' && (
+                  <>
+                    <span className="text-[#cacacb]">|</span>
+                    <button
+                      onClick={() => handleNavClick('profile')}
+                      className="inline-flex items-center space-x-1.5 text-[#111111] hover:text-[#707072] transition-colors"
+                      title="Saldo en Billetera Virtual"
+                    >
+                      <Wallet className="w-3.5 h-3.5 text-[#007d48]" />
+                      <span>${user.saldo_disponible.toLocaleString('es-CO')} COP</span>
+                    </button>
+                  </>
+                )}
+                <span className="text-[#cacacb]">|</span>
+                <button
+                  onClick={() => handleNavClick('profile')}
+                  className="hover:text-[#707072] transition-colors"
+                >
+                  Hola, {user.nombre}
+                </button>
+                <span className="text-[#cacacb]">|</span>
+                <button
+                  onClick={handleLogout}
+                  className="hover:text-[#707072] transition-colors"
+                >
+                  Cerrar Sesión
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => handleNavClick('home')}
+                  className="hover:text-[#707072] transition-colors"
+                >
+                  Catálogo
+                </button>
+                <span className="text-[#cacacb]">|</span>
+                <button
+                  onClick={() => handleNavClick('register')}
+                  className="hover:text-[#707072] transition-colors"
+                >
+                  Únete
+                </button>
+                <span className="text-[#cacacb]">|</span>
+                <button
+                  onClick={() => handleNavClick('login')}
+                  className="hover:text-[#707072] transition-colors"
+                >
+                  Iniciar Sesión
+                </button>
+              </>
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Desktop Navigation Items (Hidden on Mobile) */}
-        <nav className="hidden md:flex items-center space-x-1.5 lg:space-x-2">
-          <button
-            onClick={() => handleNavClick('home')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-              currentPage === 'home'
-                ? 'bg-blue-50 text-blue-700'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            Catálogo
-          </button>
+      {/* Primary Navigation (60px, Canvas #ffffff, Inset 1px Hairline Soft) */}
+      <div className="bg-white shadow-inset-hairline h-[60px]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center justify-between">
+          {/* Left: Mobile Hamburger + Brand Mark */}
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#f5f5f5] text-[#111111] transition-colors"
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
 
-          {isAuthenticated ? (
-            <>
-              {/* Client specific navigation: Cart & Orders */}
-              {role === 'CLIENTE' && (
+            <button
+              onClick={() => handleNavClick('home')}
+              className="flex items-center space-x-2.5 group focus:outline-none"
+            >
+              {/* Minimalist Geometric Brand Mark */}
+              <svg
+                viewBox="0 0 32 32"
+                className="w-8 h-8 text-[#111111] flex-shrink-0"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M4 6h10c2.2 0 4 1.8 4 4v16c-1.5-1.2-3.5-2-6-2H4V6zm24 0H18c-2.2 0-4 1.8-4 4v16c1.5-1.2 3.5-2 6-2h8V6z" />
+              </svg>
+              <span className="font-display text-2xl tracking-tight text-[#111111] leading-none pt-0.5">
+                LIBRERÍA CENTRAL
+              </span>
+            </button>
+          </div>
+
+          {/* Center: Desktop Primary Links (2px bottom underline on active) */}
+          <nav className="hidden md:flex items-center space-x-7 h-full">
+            <button
+              onClick={() => handleNavClick('home')}
+              className={`h-full inline-flex items-center text-base font-medium transition-colors border-b-2 ${
+                currentPage === 'home'
+                  ? 'border-[#111111] text-[#111111]'
+                  : 'border-transparent text-[#111111] hover:border-[#cacacb]'
+              }`}
+            >
+              Catálogo
+            </button>
+
+            {isAuthenticated && role === 'CLIENTE' && (
+              <button
+                onClick={() => handleNavClick('orders')}
+                className={`h-full inline-flex items-center text-base font-medium transition-colors border-b-2 ${
+                  currentPage === 'orders'
+                    ? 'border-[#111111] text-[#111111]'
+                    : 'border-transparent text-[#111111] hover:border-[#cacacb]'
+                }`}
+              >
+                Mis Compras
+              </button>
+            )}
+
+            {isAuthenticated && (role === 'ROOT' || role === 'ADMINISTRADOR') && (
+              <button
+                onClick={() => handleNavClick('inventory')}
+                className={`h-full inline-flex items-center text-base font-medium transition-colors border-b-2 ${
+                  currentPage === 'inventory'
+                    ? 'border-[#111111] text-[#111111]'
+                    : 'border-transparent text-[#111111] hover:border-[#cacacb]'
+                }`}
+              >
+                Inventario Físico
+              </button>
+            )}
+
+            {isAuthenticated && role === 'ROOT' && (
+              <button
+                onClick={() => handleNavClick('admin')}
+                className={`h-full inline-flex items-center text-base font-medium transition-colors border-b-2 ${
+                  currentPage === 'admin'
+                    ? 'border-[#111111] text-[#111111]'
+                    : 'border-transparent text-[#111111] hover:border-[#cacacb]'
+                }`}
+              >
+                Panel Root
+              </button>
+            )}
+
+            {isAuthenticated && (
+              <button
+                onClick={() => handleNavClick('profile')}
+                className={`h-full inline-flex items-center text-base font-medium transition-colors border-b-2 ${
+                  currentPage === 'profile'
+                    ? 'border-[#111111] text-[#111111]'
+                    : 'border-transparent text-[#111111] hover:border-[#cacacb]'
+                }`}
+              >
+                Perfil
+              </button>
+            )}
+          </nav>
+
+          {/* Right: Circular Icon Cluster */}
+          <div className="flex items-center space-x-2">
+            {isAuthenticated ? (
+              <>
+                {role === 'CLIENTE' && (
+                  <button
+                    onClick={() => handleNavClick('cart')}
+                    className={`inline-flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
+                      currentPage === 'cart'
+                        ? 'bg-[#111111] text-white'
+                        : 'bg-[#f5f5f5] text-[#111111] hover:bg-[#e5e5e5]'
+                    }`}
+                    title="Carrito de compras"
+                    aria-label="Carrito de compras"
+                  >
+                    <ShoppingBag className="w-5 h-5" />
+                  </button>
+                )}
+
+                <button
+                  onClick={() => handleNavClick('profile')}
+                  className={`inline-flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
+                    currentPage === 'profile'
+                      ? 'bg-[#111111] text-white'
+                      : 'bg-[#f5f5f5] text-[#111111] hover:bg-[#e5e5e5]'
+                  }`}
+                  title="Mi Perfil"
+                  aria-label="Mi Perfil"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handleNavClick('login')}
+                  className="hidden sm:inline-flex items-center justify-center rounded-full bg-[#f5f5f5] hover:bg-[#e5e5e5] text-[#111111] text-sm font-medium px-5 h-10 transition-colors"
+                >
+                  Ingresar
+                </button>
+                <button
+                  onClick={() => handleNavClick('register')}
+                  className="inline-flex items-center justify-center rounded-full bg-[#111111] hover:bg-[#39393b] text-white text-sm font-medium px-5 h-10 transition-colors"
+                >
+                  Únete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Full-Width Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-[60px] bg-white z-50 overflow-y-auto border-t border-[#e5e5e5]">
+          <div className="px-6 py-6 space-y-6">
+            {isAuthenticated && user && (
+              <div className="pb-6 border-b border-[#cacacb] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-base font-medium text-[#111111]">
+                      {user.nombre} {user.apellido}
+                    </div>
+                    <div className="text-xs text-[#707072]">{user.email}</div>
+                  </div>
+                  <span className="nike-badge-promo">{getRoleLabel()}</span>
+                </div>
+
+                {role === 'CLIENTE' && (
+                  <button
+                    onClick={() => handleNavClick('profile')}
+                    className="w-full flex items-center justify-between p-4 bg-[#f5f5f5] text-sm"
+                  >
+                    <span className="flex items-center space-x-2 text-[#111111] font-medium">
+                      <Wallet className="w-4 h-4 text-[#007d48]" />
+                      <span>Billetera Virtual</span>
+                    </span>
+                    <span className="font-medium text-[#007d48]">
+                      ${user.saldo_disponible.toLocaleString('es-CO')} COP
+                    </span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            <nav className="divide-y divide-[#e5e5e5]">
+              <button
+                onClick={() => handleNavClick('home')}
+                className="w-full py-5 flex items-center justify-between text-xl font-medium text-[#111111]"
+              >
+                <span>Catálogo</span>
+                <ChevronRight className="w-5 h-5 text-[#707072]" />
+              </button>
+
+              {isAuthenticated && role === 'CLIENTE' && (
                 <>
                   <button
                     onClick={() => handleNavClick('cart')}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                      currentPage === 'cart'
-                        ? 'bg-blue-600 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
+                    className="w-full py-5 flex items-center justify-between text-xl font-medium text-[#111111]"
                   >
-                    <ShoppingCart className="w-3.5 h-3.5" />
                     <span>Carrito</span>
+                    <ChevronRight className="w-5 h-5 text-[#707072]" />
                   </button>
-
                   <button
                     onClick={() => handleNavClick('orders')}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                      currentPage === 'orders'
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
+                    className="w-full py-5 flex items-center justify-between text-xl font-medium text-[#111111]"
                   >
-                    <Package className="w-3.5 h-3.5" />
                     <span>Mis Compras</span>
+                    <ChevronRight className="w-5 h-5 text-[#707072]" />
                   </button>
                 </>
               )}
 
-              {/* Admin & Root: Inventory management */}
-              {(role === 'ROOT' || role === 'ADMINISTRADOR') && (
+              {isAuthenticated && (role === 'ROOT' || role === 'ADMINISTRADOR') && (
                 <button
                   onClick={() => handleNavClick('inventory')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    currentPage === 'inventory'
-                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                      : 'text-emerald-700 hover:bg-emerald-50'
-                  }`}
+                  className="w-full py-5 flex items-center justify-between text-xl font-medium text-[#111111]"
                 >
-                  <Boxes className="w-3.5 h-3.5" />
                   <span>Inventario Físico</span>
+                  <ChevronRight className="w-5 h-5 text-[#707072]" />
                 </button>
               )}
 
-              {role === 'ROOT' && (
+              {isAuthenticated && role === 'ROOT' && (
                 <button
                   onClick={() => handleNavClick('admin')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    currentPage === 'admin'
-                      ? 'bg-rose-50 text-rose-700'
-                      : 'text-rose-600 hover:bg-rose-50'
-                  }`}
+                  className="w-full py-5 flex items-center justify-between text-xl font-medium text-[#111111]"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Panel Root</span>
+                  <ChevronRight className="w-5 h-5 text-[#707072]" />
                 </button>
               )}
 
-              <button
-                onClick={() => handleNavClick('profile')}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                  currentPage === 'profile'
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                }`}
-              >
-                <User className="w-3.5 h-3.5" />
-                <span>Perfil</span>
-              </button>
-
-              {/* Client wallet pill */}
-              {role === 'CLIENTE' && user && (
-                <div
+              {isAuthenticated && (
+                <button
                   onClick={() => handleNavClick('profile')}
-                  className="hidden lg:flex items-center space-x-1 text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer border border-slate-200 transition"
-                  title="Saldo en Billetera Virtual (Clic para recargar)"
+                  className="w-full py-5 flex items-center justify-between text-xl font-medium text-[#111111]"
                 >
-                  <Wallet className="w-3 h-3 text-emerald-600" />
-                  <span className="font-bold">${user.saldo_disponible.toLocaleString('es-CO')}</span>
-                </div>
+                  <span>Mi Perfil</span>
+                  <ChevronRight className="w-5 h-5 text-[#707072]" />
+                </button>
               )}
+            </nav>
 
-              {/* Role badge */}
-              <div
-                className={`hidden lg:inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-full border font-bold ${badge.classes}`}
-              >
-                {badge.label}
-              </div>
-
-              {/* User email & logout */}
-              <div className="flex items-center space-x-2 pl-2 border-l border-slate-200">
-                <div className="text-right hidden xl:block">
-                  <div className="text-xs font-semibold text-slate-800">{user?.nombre}</div>
-                  <div className="text-[10px] text-slate-400">{user?.email}</div>
-                </div>
+            <div className="pt-4 space-y-3">
+              {isAuthenticated ? (
                 <button
                   onClick={handleLogout}
-                  title="Cerrar sesión"
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                  className="nike-btn-secondary w-full space-x-2"
                 >
                   <LogOut className="w-4 h-4" />
+                  <span>Cerrar Sesión</span>
                 </button>
-              </div>
-            </>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handleNavClick('login')}
-                className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-lg transition"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Ingresar</span>
-              </button>
-              <button
-                onClick={() => handleNavClick('register')}
-                className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs transition"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>Registrarse</span>
-              </button>
-            </div>
-          )}
-        </nav>
-
-        {/* Mobile Controls (Visible on Screens < md) */}
-        <div className="flex md:hidden items-center space-x-2">
-          {isAuthenticated && role === 'CLIENTE' && (
-            <button
-              onClick={() => handleNavClick('cart')}
-              className={`p-2 rounded-xl transition relative ${
-                currentPage === 'cart'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-              title="Carrito de compras"
-              aria-label="Carrito de compras"
-            >
-              <ShoppingCart className="w-4 h-4" />
-            </button>
-          )}
-
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition focus:outline-none"
-            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-4 py-4 space-y-4 shadow-xl animate-in slide-in-from-top duration-150">
-          {isAuthenticated && user && (
-            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center shadow-xs">
-                    {user.nombre.charAt(0)}
-                    {user.apellido.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-slate-900 leading-tight">
-                      {user.nombre} {user.apellido}
-                    </div>
-                    <div className="text-xs text-slate-400">{user.email}</div>
-                  </div>
-                </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${badge.classes}`}>
-                  {user.rol}
-                </span>
-              </div>
-
-              {role === 'CLIENTE' && (
-                <div
-                  onClick={() => handleNavClick('profile')}
-                  className="flex items-center justify-between p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs cursor-pointer"
-                >
-                  <div className="flex items-center space-x-2 text-emerald-800 font-semibold">
-                    <Wallet className="w-4 h-4 text-emerald-600" />
-                    <span>Billetera Virtual:</span>
-                  </div>
-                  <div className="font-extrabold text-emerald-700 text-sm">
-                    ${user.saldo_disponible.toLocaleString('es-CO')} COP
-                  </div>
-                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleNavClick('register')}
+                    className="nike-btn-primary w-full"
+                  >
+                    Únete a Librería Central
+                  </button>
+                  <button
+                    onClick={() => handleNavClick('login')}
+                    className="nike-btn-secondary w-full"
+                  >
+                    Iniciar Sesión
+                  </button>
+                </>
               )}
             </div>
-          )}
-
-          {/* Links list */}
-          <div className="space-y-1">
-            <button
-              onClick={() => handleNavClick('home')}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                currentPage === 'home'
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-slate-700 hover:bg-slate-50'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Catálogo Principal</span>
-            </button>
-
-            {isAuthenticated ? (
-              <>
-                {role === 'CLIENTE' && (
-                  <>
-                    <button
-                      onClick={() => handleNavClick('cart')}
-                      className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                        currentPage === 'cart'
-                          ? 'bg-blue-600 text-white shadow-xs'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Mi Carrito</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleNavClick('orders')}
-                      className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                        currentPage === 'orders'
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <Package className="w-4 h-4" />
-                      <span>Mis Compras y Órdenes</span>
-                    </button>
-                  </>
-                )}
-
-                {(role === 'ROOT' || role === 'ADMINISTRADOR') && (
-                  <button
-                    onClick={() => handleNavClick('inventory')}
-                    className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                      currentPage === 'inventory'
-                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                        : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Boxes className="w-4 h-4 text-emerald-600" />
-                    <span>Control de Inventario Físico</span>
-                  </button>
-                )}
-
-                {role === 'ROOT' && (
-                  <button
-                    onClick={() => handleNavClick('admin')}
-                    className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                      currentPage === 'admin'
-                        ? 'bg-rose-50 text-rose-700'
-                        : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <ShieldCheck className="w-4 h-4 text-rose-600" />
-                    <span>Panel Superadmin Root</span>
-                  </button>
-                )}
-
-                <button
-                  onClick={() => handleNavClick('profile')}
-                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
-                    currentPage === 'profile'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <User className="w-4 h-4" />
-                  <span>Mi Perfil y Seguridad</span>
-                </button>
-
-                <div className="pt-2 border-t border-slate-100">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 transition"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Cerrar Sesión</span>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="pt-2 border-t border-slate-100 space-y-2">
-                <button
-                  onClick={() => handleNavClick('login')}
-                  className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span>Iniciar Sesión</span>
-                </button>
-                <button
-                  onClick={() => handleNavClick('register')}
-                  className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-xs transition"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  <span>Crear Cuenta Nueva</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}

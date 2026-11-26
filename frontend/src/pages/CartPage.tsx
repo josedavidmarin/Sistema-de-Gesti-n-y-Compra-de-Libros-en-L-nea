@@ -3,17 +3,13 @@ import { api, getImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { CartSummary, Order } from '../types';
 import {
-  ShoppingCart,
+  ShoppingBag,
   Trash2,
   Plus,
   Minus,
   AlertCircle,
   CheckCircle2,
-  Wallet,
-  ArrowRight,
-  MapPin,
   RefreshCw,
-  PackageCheck
 } from 'lucide-react';
 
 interface CartPageProps {
@@ -101,9 +97,7 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
       const status = err.response?.status;
       const detail = err.response?.data?.detail || 'Error al procesar la compra.';
       if (status === 409) {
-        // Concurrency error: Book out of stock
-        setErrorMsg(`⚠️ Conflicto de Stock: ${detail}`);
-        // Refresh cart to show updated real-time stock
+        setErrorMsg(`Conflicto de Stock: ${detail}`);
         fetchCart();
       } else {
         setErrorMsg(detail);
@@ -115,137 +109,115 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
 
   if (role !== 'CLIENTE') {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
-        <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto">
-          <AlertCircle className="w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-slate-800">Acceso Restringido para Personal Interno</h2>
-        <p className="text-slate-600 max-w-lg mx-auto">
-          Tu rol actual es <strong>{role}</strong>. De acuerdo con las políticas corporativas,
-          las cuentas con privilegios administrativos no están habilitadas para realizar compras de catálogo.
+      <div className="max-w-2xl mx-auto px-6 py-20 text-center space-y-5">
+        <h2 className="text-2xl font-medium text-[#111111]">
+          Acceso Restringido para Personal Interno
+        </h2>
+        <p className="text-sm text-[#707072] leading-relaxed">
+          Tu rol actual es <strong className="text-[#111111]">{role}</strong>. Las cuentas con
+          privilegios administrativos no están habilitadas para realizar compras de catálogo.
         </p>
-        <button
-          onClick={() => onNavigate('home')}
-          className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition"
-        >
+        <button onClick={() => onNavigate('home')} className="nike-btn-primary">
           Volver al Catálogo
         </button>
       </div>
     );
   }
 
-  // Success view
+  // Order Confirmation View
   if (successOrder) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16">
-        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl text-center space-y-6">
-          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-            <PackageCheck className="w-10 h-10" />
-          </div>
+      <div className="max-w-3xl mx-auto px-6 py-16 space-y-8">
+        <div className="space-y-3 border-b border-[#cacacb] pb-8">
+          <p className="text-sm font-medium text-[#007d48] flex items-center space-x-2">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Compra Confirmada con Billetera Virtual</span>
+          </p>
+          <h1 className="text-3xl sm:text-[32px] font-medium text-[#111111]">
+            Orden #{successOrder.id}
+          </h1>
+          <p className="text-sm text-[#707072]">
+            El pago se debitó automáticamente de tu saldo y los ejemplares físicos han sido asignados.
+          </p>
+        </div>
 
-          <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-              ¡Compra Exitosa con Billetera Virtual!
+        <div className="divide-y divide-[#cacacb] border-b border-[#cacacb] text-sm">
+          <div className="py-4 flex justify-between">
+            <span className="text-[#707072]">Total Pagado</span>
+            <span className="font-medium text-[#111111]">
+              ${successOrder.total.toLocaleString('es-CO')} COP
             </span>
-            <h1 className="text-3xl font-extrabold text-slate-900">
-              Orden #{successOrder.id} Confirmada
-            </h1>
-            <p className="text-slate-600">
-              El pago se debitó automáticamente de tu saldo y los ejemplares físicos han sido asignados.
-            </p>
           </div>
+          <div className="py-4 flex justify-between">
+            <span className="text-[#707072]">Dirección de Entrega</span>
+            <span className="font-medium text-[#111111]">{successOrder.direccion_envio}</span>
+          </div>
+          <div className="py-4 flex justify-between">
+            <span className="text-[#707072]">Estado</span>
+            <span className="font-medium text-[#007d48]">{successOrder.estado}</span>
+          </div>
+        </div>
 
-          <div className="bg-slate-50 rounded-2xl p-6 text-left border border-slate-200 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Total Pagado:</span>
-              <span className="font-bold text-emerald-700 text-base">
-                ${successOrder.total.toLocaleString('es-CO')} COP
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Dirección de Entrega:</span>
-              <span className="font-medium text-slate-800">{successOrder.direccion_envio}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Estado:</span>
-              <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">
-                {successOrder.estado}
-              </span>
-            </div>
-
-            <div className="pt-3 border-t border-slate-200">
-              <div className="text-xs font-bold uppercase text-slate-400 mb-2">
-                Copias Físicas Asignadas a su Pedido:
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-[#111111]">Ejemplares Físicos Asignados</h3>
+          <div className="space-y-2">
+            {successOrder.detalles?.map((item) => (
+              <div
+                key={item.id}
+                className="p-4 bg-[#f5f5f5] flex items-center justify-between text-sm"
+              >
+                <span className="font-medium text-[#111111]">{item.titulo_libro}</span>
+                <span className="font-mono text-xs text-[#707072]">{item.codigo_ejemplar}</span>
               </div>
-              <div className="space-y-1">
-                {successOrder.detalles?.map((item) => (
-                  <div key={item.id} className="text-xs text-slate-700 flex justify-between bg-white p-2 rounded border border-slate-100">
-                    <span>
-                      <strong>{item.titulo_libro}</strong>
-                    </span>
-                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-blue-700">
-                      {item.codigo_ejemplar}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
+        </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button
-              onClick={() => onNavigate('orders')}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow transition flex items-center space-x-2"
-            >
-              <span>Ver Mis Compras</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => {
-                setSuccessOrder(null);
-                onNavigate('home');
-              }}
-              className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl border border-slate-200 shadow-sm transition"
-            >
-              Seguir Comprando
-            </button>
-          </div>
+        <div className="flex flex-wrap gap-3 pt-4">
+          <button onClick={() => onNavigate('orders')} className="nike-btn-primary">
+            Ver Mis Compras
+          </button>
+          <button
+            onClick={() => {
+              setSuccessOrder(null);
+              onNavigate('home');
+            }}
+            className="nike-btn-secondary"
+          >
+            Seguir Comprando
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 py-10 space-y-10">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-[#cacacb]">
         <div>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <ShoppingCart className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Carrito de Compras</h1>
-              <p className="text-xs text-slate-500">
-                Los libros permanecen en tu carrito. El stock físico se descuenta únicamente al confirmar tu compra.
-              </p>
-            </div>
-          </div>
+          <h1 className="text-2xl sm:text-[32px] font-medium text-[#111111] leading-[1.2]">
+            Carrito
+          </h1>
+          <p className="text-sm text-[#707072] mt-1">
+            El stock físico se reserva y descuenta únicamente al confirmar tu pago.
+          </p>
         </div>
 
         <div className="flex items-center space-x-3">
           <button
             onClick={fetchCart}
             disabled={loading}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition"
-            title="Refrescar disponibilidad de stock"
+            className="nike-btn-icon"
+            title="Actualizar disponibilidad"
+            aria-label="Actualizar disponibilidad"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
           {cart && cart.items.length > 0 && (
             <button
               onClick={handleClearCart}
-              className="text-xs text-rose-600 hover:text-rose-700 font-medium px-3 py-1.5 rounded-lg hover:bg-rose-50 transition"
+              className="text-sm font-medium text-[#707072] hover:text-[#d30005] underline underline-offset-4 transition-colors"
             >
               Vaciar Carrito
             </button>
@@ -255,238 +227,206 @@ export const CartPage: React.FC<CartPageProps> = ({ onNavigate }) => {
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start space-x-3">
-          <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
+        <div className="p-4 border border-[#d30005] text-[#d30005] text-sm flex items-start space-x-2.5">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <div className="flex-1 font-medium">{errorMsg}</div>
         </div>
       )}
 
       {loading && !cart ? (
         <div className="py-20 text-center space-y-3">
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-slate-500">Cargando tu carrito de compras...</p>
+          <div className="w-8 h-8 border-2 border-[#111111] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-[#707072]">Cargando tu carrito...</p>
         </div>
       ) : !cart || cart.items.length === 0 ? (
-        /* Empty Cart State */
-        <div className="bg-white rounded-3xl p-12 border border-slate-200 text-center space-y-5 max-w-lg mx-auto shadow-sm">
-          <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
-            <ShoppingCart className="w-8 h-8" />
-          </div>
+        <div className="py-16 text-center space-y-5 bg-[#f5f5f5] max-w-lg mx-auto p-10">
+          <ShoppingBag className="w-10 h-10 text-[#707072] mx-auto" />
           <div className="space-y-1">
-            <h3 className="text-lg font-bold text-slate-800">Tu carrito está vacío</h3>
-            <p className="text-sm text-slate-500">
-              Explora nuestro catálogo con cientos de títulos y añade los que más te interesen.
+            <h3 className="text-lg font-medium text-[#111111]">Tu carrito está vacío</h3>
+            <p className="text-sm text-[#707072]">
+              Explora el catálogo y agrega los títulos que desees adquirir.
             </p>
           </div>
-          <button
-            onClick={() => onNavigate('home')}
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-md transition"
-          >
+          <button onClick={() => onNavigate('home')} className="nike-btn-primary">
             Explorar Catálogo
           </button>
         </div>
       ) : (
-        /* Cart Content */
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Items List */}
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Items Column (8 cols) */}
+          <div className="lg:col-span-8 divide-y divide-[#cacacb] border-b border-[#cacacb]">
             {cart.items.map((item) => {
               const hasEnoughStock = item.stock_disponible >= item.cantidad;
               return (
                 <div
                   key={item.id}
-                  className={`bg-white rounded-2xl p-5 border transition shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
-                    !hasEnoughStock ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200'
-                  }`}
+                  className="py-6 first:pt-0 flex flex-col sm:flex-row items-start justify-between gap-6"
                 >
-                  <div className="flex items-center space-x-4 flex-1">
-                    {item.portada_url ? (
-                      <img
-                        src={getImageUrl(item.portada_url)}
-                        alt={item.titulo}
-                        className="w-16 h-20 object-cover rounded-lg shadow-sm border border-slate-100 flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-16 h-20 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0 font-bold text-xs">
-                        Libro
-                      </div>
-                    )}
-                    <div className="space-y-1">
-                      <h4 className="font-bold text-slate-900 text-base leading-tight">
+                  <div className="flex items-start space-x-5 flex-1">
+                    <div className="w-24 h-32 bg-[#f5f5f5] flex-shrink-0 overflow-hidden">
+                      {item.portada_url ? (
+                        <img
+                          src={getImageUrl(item.portada_url)}
+                          alt={item.titulo}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs text-[#707072]">
+                          Libro
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1.5 flex-1">
+                      <h4 className="text-base font-medium text-[#111111] leading-snug">
                         {item.titulo}
                       </h4>
-                      <p className="text-xs text-slate-500">{item.autor}</p>
-                      <div className="text-xs font-semibold text-blue-600">
+                      <p className="text-sm text-[#707072]">{item.autor}</p>
+                      <p className="text-sm text-[#707072]">
                         ${item.precio_unitario.toLocaleString('es-CO')} COP c/u
-                      </div>
+                      </p>
 
-                      {/* Stock Status Badge */}
-                      <div className="pt-1">
+                      {/* Semantic Stock Signal */}
+                      <div className="pt-1 text-xs font-medium">
                         {item.stock_disponible === 0 ? (
-                          <span className="inline-flex items-center text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
-                            Agotado en tienda
-                          </span>
+                          <span className="text-[#d30005]">Agotado en tienda</span>
                         ) : hasEnoughStock ? (
-                          <span className="inline-flex items-center text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          <span className="text-[#007d48]">
                             {item.stock_disponible} ejemplares disponibles
                           </span>
                         ) : (
-                          <span className="inline-flex items-center text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                            ⚠️ Solo {item.stock_disponible} disponibles (solicitas {item.cantidad})
+                          <span className="text-[#d30005]">
+                            Solo {item.stock_disponible} disponibles (solicitas {item.cantidad})
                           </span>
                         )}
+                      </div>
+
+                      {/* Quantity Controls + Trash */}
+                      <div className="pt-3 flex items-center space-x-4">
+                        <div className="inline-flex items-center border border-[#cacacb] rounded-full h-9 px-1">
+                          <button
+                            onClick={() => handleUpdateQuantity(item.id, item.cantidad - 1)}
+                            disabled={item.cantidad <= 1 || updatingId === item.id}
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-[#111111] hover:bg-[#f5f5f5] disabled:opacity-30"
+                            aria-label="Disminuir cantidad"
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="w-8 text-center text-sm font-medium text-[#111111]">
+                            {item.cantidad}
+                          </span>
+                          <button
+                            onClick={() => handleUpdateQuantity(item.id, item.cantidad + 1)}
+                            disabled={item.cantidad >= 3 || updatingId === item.id}
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-[#111111] hover:bg-[#f5f5f5] disabled:opacity-30"
+                            title="Máximo 3 unidades por título"
+                            aria-label="Aumentar cantidad"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => handleRemoveItem(item.id)}
+                          disabled={updatingId === item.id}
+                          className="text-[#707072] hover:text-[#d30005] p-2 transition-colors"
+                          title="Eliminar"
+                          aria-label="Eliminar del carrito"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   </div>
 
-                  {/* Quantity & Actions */}
-                  <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto space-x-6 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                    {/* Quantity Selector */}
-                    <div className="flex items-center space-x-2 bg-slate-100 rounded-xl p-1">
-                      <button
-                        onClick={() => handleUpdateQuantity(item.id, item.cantidad - 1)}
-                        disabled={item.cantidad <= 1 || updatingId === item.id}
-                        className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-700 hover:bg-slate-200 disabled:opacity-40 transition shadow-xs"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="w-6 text-center font-bold text-sm text-slate-800">
-                        {item.cantidad}
-                      </span>
-                      <button
-                        onClick={() => handleUpdateQuantity(item.id, item.cantidad + 1)}
-                        disabled={item.cantidad >= 3 || updatingId === item.id}
-                        className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-700 hover:bg-slate-200 disabled:opacity-40 transition shadow-xs"
-                        title="Máximo 3 unidades por título (regla de negocio)"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    {/* Subtotal */}
-                    <div className="text-right min-w-[100px]">
-                      <div className="font-extrabold text-slate-900 text-sm">
-                        ${item.subtotal.toLocaleString('es-CO')} COP
-                      </div>
-                    </div>
-
-                    {/* Remove */}
-                    <button
-                      onClick={() => handleRemoveItem(item.id)}
-                      disabled={updatingId === item.id}
-                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
-                      title="Eliminar del carrito"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  {/* Subtotal */}
+                  <div className="text-base font-medium text-[#111111] sm:text-right">
+                    ${item.subtotal.toLocaleString('es-CO')} COP
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Checkout & Summary Column */}
-          <div className="space-y-6">
-            {/* Wallet Balance Card */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+          {/* Summary Column (4 cols) */}
+          <div className="lg:col-span-4 space-y-6">
+            <h2 className="text-2xl font-medium text-[#111111]">Resumen</h2>
+
+            <div className="space-y-3 text-sm border-b border-[#cacacb] pb-5">
+              <div className="flex justify-between">
+                <span className="text-[#707072]">Títulos distintos</span>
+                <span className="text-[#111111] font-medium">{cart.titulos_distintos}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#707072]">Total de ejemplares</span>
+                <span className="text-[#111111] font-medium">{cart.total_items}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#707072]">Envío estándar</span>
+                <span className="text-[#007d48] font-medium">Gratis</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-baseline border-b border-[#cacacb] pb-5">
+              <span className="text-base font-medium text-[#111111]">Total</span>
+              <span className="text-lg font-medium text-[#111111]">
+                ${cart.subtotal.toLocaleString('es-CO')} COP
+              </span>
+            </div>
+
+            {/* Wallet Info */}
+            <div className="p-4 bg-[#f5f5f5] space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-slate-800 font-bold text-sm">
-                  <Wallet className="w-4 h-4 text-emerald-600" />
-                  <span>Tu Billetera Virtual</span>
-                </div>
+                <span className="text-[#707072]">Saldo Billetera Virtual</span>
                 <button
                   onClick={() => onNavigate('profile')}
-                  className="text-xs text-blue-600 hover:underline font-semibold"
+                  className="text-xs font-medium text-[#111111] underline underline-offset-4"
                 >
                   Recargar
                 </button>
               </div>
-
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
-                    Saldo Disponible
-                  </div>
-                  <div className="text-xl font-extrabold text-slate-900">
-                    ${cart.saldo_cliente.toLocaleString('es-CO')} COP
-                  </div>
-                </div>
-                {cart.alcance_saldo ? (
-                  <CheckCircle2 className="w-6 h-6 text-emerald-600" />
-                ) : (
-                  <AlertCircle className="w-6 h-6 text-rose-500" />
-                )}
-              </div>
-
-              {!cart.alcance_saldo && (
-                <div className="text-xs text-rose-600 font-medium bg-rose-50 p-2.5 rounded-lg border border-rose-200">
-                  Saldo insuficiente para cubrir ${cart.subtotal.toLocaleString('es-CO')} COP.
-                  Por favor recarga saldo antes de finalizar.
-                </div>
-              )}
-            </div>
-
-            {/* Order Summary & Final Checkout */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
-              <h3 className="font-bold text-slate-900 text-base">Resumen del Pedido</h3>
-
-              <div className="space-y-2.5 text-sm text-slate-600">
-                <div className="flex justify-between">
-                  <span>Títulos distintos:</span>
-                  <span className="font-semibold text-slate-800">{cart.titulos_distintos}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Total ejemplares:</span>
-                  <span className="font-semibold text-slate-800">{cart.total_items}</span>
-                </div>
-                <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-100">
-                  <span>Total a Pagar:</span>
-                  <span className="text-blue-700">
-                    ${cart.subtotal.toLocaleString('es-CO')} COP
-                  </span>
-                </div>
-              </div>
-
-              {/* Delivery Address */}
-              <div className="space-y-2 pt-2 border-t border-slate-100">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center space-x-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Dirección de Envío</span>
-                </label>
-                <input
-                  type="text"
-                  value={direccionEnvio}
-                  onChange={(e) => setDireccionEnvio(e.target.value)}
-                  placeholder="Ej: Carrera 27 # 4-10, Pereira"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Checkout Button */}
-              <button
-                onClick={handleCheckout}
-                disabled={checkingOut || !cart.alcance_saldo || !cart.todos_disponibles}
-                className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition flex items-center justify-center space-x-2"
+              <div
+                className={`text-base font-medium ${
+                  cart.alcance_saldo ? 'text-[#007d48]' : 'text-[#d30005]'
+                }`}
               >
-                {checkingOut ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Verificando y Comprando...</span>
-                  </>
-                ) : (
-                  <>
-                    <PackageCheck className="w-5 h-5" />
-                    <span>Pagar con Billetera Virtual</span>
-                  </>
-                )}
-              </button>
-
-              {!cart.todos_disponibles && (
-                <p className="text-[11px] text-amber-700 text-center font-medium bg-amber-50 p-2 rounded-lg border border-amber-200">
-                  ⚠️ Algunos libros tienen unidades agotadas o insuficientes. Ajusta las cantidades para proceder.
+                ${cart.saldo_cliente.toLocaleString('es-CO')} COP
+              </div>
+              {!cart.alcance_saldo && (
+                <p className="text-xs text-[#d30005]">
+                  Saldo insuficiente para completar esta compra.
                 </p>
               )}
             </div>
+
+            {/* Delivery Address */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
+                Dirección de Envío
+              </label>
+              <input
+                type="text"
+                value={direccionEnvio}
+                onChange={(e) => setDireccionEnvio(e.target.value)}
+                placeholder="Ej: Carrera 27 # 4-10, Pereira"
+                className="nike-input"
+              />
+            </div>
+
+            <button
+              onClick={handleCheckout}
+              disabled={checkingOut || !cart.alcance_saldo || !cart.todos_disponibles}
+              className="nike-btn-primary w-full"
+            >
+              {checkingOut ? 'Procesando pago...' : 'Pagar con Billetera Virtual'}
+            </button>
+
+            {!cart.todos_disponibles && (
+              <p className="text-xs text-[#d30005] text-center">
+                Algunos libros están agotados o tienen stock insuficiente. Ajusta las cantidades
+                para continuar.
+              </p>
+            )}
           </div>
         </div>
       )}

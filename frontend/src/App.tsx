@@ -30,7 +30,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white text-[#111111] w-full overflow-x-hidden">
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
       <main className="flex-1 w-full overflow-x-hidden">
@@ -54,33 +54,114 @@ const AppContent: React.FC = () => {
         {currentPage === 'admin' && <AdminPage />}
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 text-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-            <div className="space-y-1">
-              <span className="text-white font-extrabold text-base tracking-tight">
-                Librería Central S.A.S.
-              </span>
-              <p className="text-xs text-slate-400">
-                Tu portal de literatura, ciencia y cultura con despacho garantizado a nivel nacional.
-              </p>
+      {/* Nike-style 4-column flat white footer with 1px hairline top divider */}
+      <footer className="bg-white border-t border-[#cacacb] mt-16">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-[#e5e5e5]">
+            {/* Column 1: Recursos */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-[#111111]">Recursos</h4>
+              <ul className="space-y-2.5 text-sm font-medium text-[#707072]">
+                <li>
+                  <button
+                    onClick={() => handleNavigate('home')}
+                    className="hover:text-[#111111] transition-colors"
+                  >
+                    Catálogo Completo
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavigate('register')}
+                    className="hover:text-[#111111] transition-colors"
+                  >
+                    Hazte Miembro
+                  </button>
+                </li>
+                <li>
+                  <span className="cursor-default">Sedes y Puntos de Retiro</span>
+                </li>
+                <li>
+                  <span className="cursor-default">Novedades Editoriales</span>
+                </li>
+              </ul>
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-xs">
-              <button onClick={() => handleNavigate('home')} className="hover:text-white transition">Catálogo de Libros</button>
-              <span className="text-slate-700">•</span>
-              <span className="text-slate-400">Términos y Condiciones</span>
-              <span className="text-slate-700">•</span>
-              <span className="text-slate-400">Política de Privacidad</span>
-              <span className="text-slate-700">•</span>
-              <span className="text-slate-400">Envíos y Devoluciones</span>
+
+            {/* Column 2: Ayuda */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-[#111111]">Ayuda</h4>
+              <ul className="space-y-2.5 text-sm font-medium text-[#707072]">
+                <li>
+                  <button
+                    onClick={() => handleNavigate('orders')}
+                    className="hover:text-[#111111] transition-colors"
+                  >
+                    Estado de mi Pedido
+                  </button>
+                </li>
+                <li>
+                  <span className="cursor-default">Envíos y Despachos</span>
+                </li>
+                <li>
+                  <span className="cursor-default">Cancelaciones y Reembolsos</span>
+                </li>
+                <li>
+                  <span className="cursor-default">contacto@libreriacentral.com</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Empresa */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-[#111111]">Empresa</h4>
+              <ul className="space-y-2.5 text-sm font-medium text-[#707072]">
+                <li>
+                  <span className="cursor-default">Acerca de Librería Central</span>
+                </li>
+                <li>
+                  <span className="cursor-default">Control de Ejemplares Físicos</span>
+                </li>
+                <li>
+                  <span className="cursor-default">Sostenibilidad Editorial</span>
+                </li>
+                <li>
+                  <span className="cursor-default">Alianzas y Editoriales</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Membresía & Pagos */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-[#111111]">Pagos y Seguridad</h4>
+              <ul className="space-y-2.5 text-sm font-medium text-[#707072]">
+                <li>
+                  <button
+                    onClick={() => handleNavigate('profile')}
+                    className="hover:text-[#111111] transition-colors"
+                  >
+                    Billetera Virtual
+                  </button>
+                </li>
+                <li>
+                  <span className="cursor-default">Trazabilidad por Código de Barras</span>
+                </li>
+                <li>
+                  <span className="cursor-default">Protección de Datos (Ley 1581)</span>
+                </li>
+                <li>
+                  <span className="cursor-default">Lun - Sáb · 8:00 a 18:00</span>
+                </li>
+              </ul>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[11px] text-slate-400">
-            <div>
-              © 2026 Librería Central S.A.S. Todos los derechos reservados. Pagos seguros con Billetera Virtual y trazabilidad garantizada.
-            </div>
-            <div>
-              Atención al Cliente: contacto@libreriacentral.com • Horario: Lun - Sáb 8:00 a 18:00
+
+          {/* Fine-print Utility Row */}
+          <div className="pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-medium text-[#707072]">
+            <div>© 2026 Librería Central S.A.S. Todos los derechos reservados.</div>
+            <div className="flex flex-wrap items-center gap-5">
+              <span>Colombia</span>
+              <span>Términos de Uso</span>
+              <span>Política de Privacidad</span>
             </div>
           </div>
         </div>

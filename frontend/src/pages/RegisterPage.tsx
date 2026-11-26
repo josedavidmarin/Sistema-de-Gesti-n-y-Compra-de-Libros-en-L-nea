@@ -7,19 +7,13 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { UserPlus, Mail, Lock, User, Phone, MapPin, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface RegisterPageProps {
-  /** Callback triggered after successful registration and automatic login */
   onSuccess: () => void;
-  /** Callback to navigate to the login screen */
   onGoToLogin: () => void;
 }
 
-/**
- * Registration page component for new store clients.
- * Enforces client-side validation before submitting credentials to POST /api/v1/auth/register.
- */
 export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLogin }) => {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
@@ -36,17 +30,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  /**
-   * Updates form state when an input field value changes.
-   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Validates registration fields (DNI length, password match, Habeas Data consent)
-   * and submits the new client registration request.
-   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -98,196 +85,150 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
     formData.password === formData.confirmPassword;
 
   return (
-    <div className="max-w-2xl mx-auto my-10 px-4">
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 sm:p-10">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-inner">
-            <UserPlus className="w-6 h-6" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900">Registro de Cliente</h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Cree su cuenta para comprar libros, acceder a su monedero y gestionar envíos a domicilio
+    <div className="max-w-2xl mx-auto my-12 px-6">
+      <div className="space-y-8">
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-widest text-[#707072]">
+            Membresía Librería Central
+          </p>
+          <h1 className="text-[32px] font-medium text-[#111111] leading-[1.15]">
+            Crea tu cuenta de cliente
+          </h1>
+          <p className="text-sm text-[#707072]">
+            Accede a tu billetera virtual, seguimiento de ejemplares físicos y envíos a domicilio.
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start space-x-2">
+          <div className="p-4 border border-[#d30005] bg-white text-[#d30005] text-sm flex items-start space-x-2.5">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* National ID (DNI) */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
                 Documento de Identidad (DNI) *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <CreditCard className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  name="dni"
-                  required
-                  minLength={5}
-                  value={formData.dni}
-                  onChange={handleChange}
-                  placeholder="Ej. 1088123456"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="text"
+                name="dni"
+                required
+                minLength={5}
+                value={formData.dni}
+                onChange={handleChange}
+                placeholder="Ej. 1088123456"
+                className="nike-input"
+              />
             </div>
 
-            {/* Email Address */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
                 Correo Electrónico *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="su_correo@dominio.com"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="su_correo@dominio.com"
+                className="nike-input"
+              />
             </div>
 
-            {/* First Name */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
                 Nombres *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  name="nombre"
-                  required
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  placeholder="Carlos Alberto"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="text"
+                name="nombre"
+                required
+                value={formData.nombre}
+                onChange={handleChange}
+                placeholder="Carlos Alberto"
+                className="nike-input"
+              />
             </div>
 
-            {/* Last Name */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
                 Apellidos *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  name="apellido"
-                  required
-                  value={formData.apellido}
-                  onChange={handleChange}
-                  placeholder="Gómez Restrepo"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="text"
+                name="apellido"
+                required
+                value={formData.apellido}
+                onChange={handleChange}
+                placeholder="Gómez Restrepo"
+                className="nike-input"
+              />
             </div>
 
-            {/* Contact Phone */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
                 Teléfono de Contacto
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  name="telefono"
-                  value={formData.telefono}
-                  onChange={handleChange}
-                  placeholder="Ej. 3125554321"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="text"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                placeholder="Ej. 3125554321"
+                className="nike-input"
+              />
             </div>
 
-            {/* Shipping Address */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Dirección de Correspondencia y Entrega
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
+                Dirección de Envío
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  name="direccion"
-                  value={formData.direccion}
-                  onChange={handleChange}
-                  placeholder="Ej. Carrera 27 # 4-10, Pereira"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="text"
+                name="direccion"
+                value={formData.direccion}
+                onChange={handleChange}
+                placeholder="Ej. Carrera 27 # 4-10, Pereira"
+                className="nike-input"
+              />
             </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
                 Contraseña *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <input
-                  type="password"
-                  name="password"
-                  required
-                  minLength={6}
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Mínimo 6 caracteres"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="password"
+                name="password"
+                required
+                minLength={6}
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Mínimo 6 caracteres"
+                className="nike-input"
+              />
             </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-[#111111]">
                 Confirmar Contraseña *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  required
-                  minLength={6}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Repita la contraseña"
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
-                />
-              </div>
+              <input
+                type="password"
+                name="confirmPassword"
+                required
+                minLength={6}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Repita la contraseña"
+                className="nike-input"
+              />
               {passwordsMatch && (
-                <p className="text-[11px] text-emerald-600 font-medium mt-1 flex items-center space-x-1">
+                <p className="text-xs text-[#007d48] font-medium pt-1 flex items-center space-x-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Las contraseñas coinciden</span>
                 </p>
@@ -297,41 +238,31 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onGoToLog
 
           {/* Habeas Data Consent */}
           <div className="pt-2">
-            <label className="flex items-start space-x-2 text-xs text-slate-600 cursor-pointer">
+            <label className="flex items-start space-x-3 text-xs text-[#707072] cursor-pointer leading-relaxed">
               <input
                 type="checkbox"
                 checked={habeasData}
                 onChange={(e) => setHabeasData(e.target.checked)}
-                className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 w-4 h-4 accent-[#111111]"
               />
               <span>
-                Autorizo el tratamiento de mis datos personales de conformidad con la Ley 1581 de 2012 de Colombia y las políticas de privacidad de la librería.
+                Autorizo el tratamiento de mis datos personales de conformidad con la Ley 1581 de
+                2012 de Colombia y las políticas de privacidad de Librería Central.
               </span>
             </label>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition disabled:opacity-50 flex items-center justify-center space-x-2 mt-4"
-          >
-            {loading ? (
-              <span>Creando cuenta segura...</span>
-            ) : (
-              <>
-                <span>Completar Registro de Cliente</span>
-                <CheckCircle2 className="w-5 h-5" />
-              </>
-            )}
+          <button type="submit" disabled={loading} className="nike-btn-primary w-full">
+            {loading ? 'Creando cuenta...' : 'Completar Registro'}
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-          <p className="text-sm text-slate-600">
-            ¿Ya tienes una cuenta creada?{' '}
+        <div className="pt-6 border-t border-[#cacacb] text-center">
+          <p className="text-sm text-[#707072]">
+            ¿Ya tienes una cuenta?{' '}
             <button
               onClick={onGoToLogin}
-              className="text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+              className="text-[#111111] font-medium underline underline-offset-4 hover:text-[#707072] transition-colors"
             >
               Iniciar Sesión
             </button>
